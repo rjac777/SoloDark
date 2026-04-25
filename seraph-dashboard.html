@@ -297,6 +297,34 @@
   hr.divider { border: none; border-top: 1px solid var(--stone-border); margin: 1.5rem 0; }
   .twist-note { font-size: 0.85rem; color: var(--ink-faint); font-style: italic; margin-top: 0.45rem; }
 
+  /* ── LOOT ── */
+  .loot-context-toggle { display: flex; margin-bottom: 1.1rem; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
+  .loot-ctx-btn { flex: 1; padding: 0.7rem 0.5rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; line-height: 1.3; text-align: center; }
+  .loot-ctx-btn:last-child { border-right: none; }
+  .loot-ctx-btn.active { background: var(--stone-raised); color: var(--parchment-warm); }
+  .loot-ctx-btn:hover:not(.active) { color: var(--ink-bright); }
+
+  .wealth-toggle { display: flex; gap: 0; margin-bottom: 1.1rem; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
+  .wealth-btn { flex: 1; padding: 0.55rem 0.5rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .wealth-btn:last-child { border-right: none; }
+  .wealth-btn.active { background: var(--stone-raised); color: var(--gold-mid); }
+  .wealth-btn:hover:not(.active) { color: var(--ink-bright); }
+  .wealth-row { display: none; margin-bottom: 1.1rem; }
+  .wealth-row.visible { display: block; }
+
+  .loot-card { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.85rem 1rem 1rem; margin-bottom: 0.9rem; }
+  .loot-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+  .loot-result-row { display: flex; gap: 0.6rem; align-items: flex-start; }
+
+  /* ── NPC ── */
+  .npc-section-label { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); margin: 1.4rem 0 0.7rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--stone-border); }
+  .npc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.9rem; }
+  @media (max-width: 500px) { .npc-grid { grid-template-columns: 1fr; } }
+  .npc-grid .loot-card { margin-bottom: 0; }
+  .npc-generate-result { background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; padding: 1rem 1.2rem; margin-bottom: 1.4rem; display: none; }
+  .npc-generate-result .room-line { display: flex; gap: 0.7rem; padding: 0.3rem 0; border-bottom: 1px solid rgba(90,74,50,0.2); align-items: baseline; }
+  .npc-generate-result .room-line:last-child { border-bottom: none; }
+
   @keyframes fadeUp { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
   .revealed { animation: fadeUp 0.25s ease forwards; }
   @keyframes flashResult { 0% { color: var(--gold-bright); } 100% { color: var(--result-text); } }
@@ -315,8 +343,8 @@
   <div class="tab active" onclick="showPanel('oracle',this)">Oracle</div>
   <div class="tab" onclick="showPanel('dungeon',this)">Dungeon</div>
   <div class="tab" onclick="showPanel('prompts',this)">Prompts</div>
-  <div class="tab stub" title="Coming soon">Loot</div>
-  <div class="tab stub" title="Coming soon">NPC</div>
+  <div class="tab" onclick="showPanel('loot',this)">Loot</div>
+  <div class="tab" onclick="showPanel('npc',this)">NPC</div>
   <div class="tab stub" title="Coming soon">Encounter</div>
 </nav>
 
@@ -485,15 +513,135 @@
     </div>
   </div>
 
-  <!-- Stubs -->
+  <!-- ══════════════════════════════════════════════════════
+       LOOT PANEL
+  ══════════════════════════════════════════════════════ -->
   <div id="panel-loot" class="panel">
     <div class="section-title">Loot</div>
-    <div class="coming-soon"><div class="rune">⧖</div>Coming in the next build.</div>
+
+    <!-- Four search contexts — tap to switch -->
+    <div class="loot-context-toggle">
+      <button class="loot-ctx-btn active" id="lctx-pockets" onclick="setLootCtx('pockets',this)">Pockets<br>/ Body</button>
+      <button class="loot-ctx-btn"        id="lctx-stash"   onclick="setLootCtx('stash',this)">Stash<br>/ Office</button>
+      <button class="loot-ctx-btn"        id="lctx-cave"    onclick="setLootCtx('cave',this)">Cave<br>/ Wild</button>
+      <button class="loot-ctx-btn"        id="lctx-dungeon" onclick="setLootCtx('dungeon',this)">Dungeon<br>/ Crypt</button>
+    </div>
+
+    <!-- Wealth toggle — only shown for Stash context -->
+    <div class="wealth-row" id="wealth-row">
+      <div class="wealth-toggle">
+        <button class="wealth-btn active" id="wbtn-poor" onclick="setWealth('poor',this)">Poor / Desperate</button>
+        <button class="wealth-btn"        id="wbtn-rich" onclick="setWealth('rich',this)">Successful / Flush</button>
+      </div>
+    </div>
+
+    <div class="info-box" id="loot-info-box" style="font-size:0.88rem; margin-bottom:1.1rem;"></div>
+
+    <!-- Loot table cards — rendered dynamically -->
+    <div id="loot-tables"></div>
   </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       NPC PANEL
+  ══════════════════════════════════════════════════════ -->
   <div id="panel-npc" class="panel">
     <div class="section-title">NPC</div>
-    <div class="coming-soon"><div class="rune">⧖</div>Coming in the next build.</div>
+
+    <!-- Quick Generate -->
+    <div class="npc-section-label">Quick Generate</div>
+    <button class="btn-generate" onclick="generateNPC()">⚄ &nbsp; Generate NPC</button>
+    <div class="npc-generate-result" id="npc-quick-result"></div>
+
+    <!-- Interaction rolls -->
+    <div class="npc-section-label">Interaction</div>
+    <div class="npc-grid">
+
+      <div class="loot-card">
+        <div class="loot-card-header">
+          <span class="table-label">Reaction</span>
+          <span class="die-badge">d6</span>
+        </div>
+        <div class="loot-result-row">
+          <div class="result-display empty" id="res-npc-reaction">—</div>
+          <button class="btn-roll" onclick="rollNPCSingle('reaction')">Roll</button>
+        </div>
+      </div>
+
+      <div class="loot-card">
+        <div class="loot-card-header">
+          <span class="table-label">Cooperation</span>
+          <span class="die-badge">d6</span>
+        </div>
+        <div class="loot-result-row">
+          <div class="result-display empty" id="res-npc-coop">—</div>
+          <button class="btn-roll" onclick="rollNPCSingle('coop')">Roll</button>
+        </div>
+      </div>
+
+      <div class="loot-card">
+        <div class="loot-card-header">
+          <span class="table-label">Loyalty Check</span>
+          <span class="die-badge">d6</span>
+        </div>
+        <div class="loot-result-row">
+          <div class="result-display empty" id="res-npc-loyalty">—</div>
+          <button class="btn-roll" onclick="rollNPCSingle('loyalty')">Roll</button>
+        </div>
+      </div>
+
+      <div class="loot-card">
+        <div class="loot-card-header">
+          <span class="table-label">Disposition</span>
+          <span class="die-badge">d8</span>
+        </div>
+        <div class="loot-result-row">
+          <div class="result-display empty" id="res-npc-disposition">—</div>
+          <button class="btn-roll" onclick="rollNPCSingle('disposition')">Roll</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recruitment -->
+    <div class="npc-section-label">Recruitment</div>
+    <div class="npc-grid">
+
+      <div class="loot-card">
+        <div class="loot-card-header">
+          <span class="table-label">Motivation</span>
+          <span class="die-badge">d8</span>
+        </div>
+        <div class="loot-result-row">
+          <div class="result-display empty" id="res-npc-motivation">—</div>
+          <button class="btn-roll" onclick="rollNPCSingle('motivation')">Roll</button>
+        </div>
+      </div>
+
+      <div class="loot-card">
+        <div class="loot-card-header">
+          <span class="table-label">Ask / Cost</span>
+          <span class="die-badge">d8</span>
+        </div>
+        <div class="loot-result-row">
+          <div class="result-display empty" id="res-npc-ask">—</div>
+          <button class="btn-roll" onclick="rollNPCSingle('ask')">Roll</button>
+        </div>
+      </div>
+
+      <div class="loot-card full-width" style="grid-column:1/-1;">
+        <div class="loot-card-header">
+          <span class="table-label">Capability</span>
+          <span class="die-badge">d6</span>
+        </div>
+        <div class="loot-result-row">
+          <div class="result-display empty" id="res-npc-capability">—</div>
+          <button class="btn-roll" onclick="rollNPCSingle('capability')">Roll</button>
+        </div>
+      </div>
+
+    </div>
   </div>
+
   <div id="panel-encounter" class="panel">
     <div class="section-title">Encounter / Location</div>
     <div class="coming-soon"><div class="rune">⧖</div>Coming in the next build.</div>
@@ -881,11 +1029,13 @@ function rollPrompt(verbId, nounId, rollsId) {
 }
 
 // Called inline from oracle panel on a Twist
+// Button stays visible so you can reroll as many times as needed
 function rollInlinePrompt() {
   const area = document.getElementById('oracle-prompt-area');
   const vr = roll(100);
   const nr = roll(100);
   area.innerHTML = `
+    <button class="btn-prompt-inline" onclick="rollInlinePrompt()">⚄ Roll Prompt</button>
     <div class="inline-prompt-result revealed">
       <div class="inline-prompt-label">Prompt</div>
       <div class="inline-prompt-text">${PROMPT_VERBS[vr]} &middot; ${PROMPT_NOUNS[nr]}</div>
@@ -1096,6 +1246,500 @@ function generateRoom() {
 
 
 // ════════════════════════════════════════════════════════════════
+//
+//  LOOT TABLE DATA
+//
+//  Four contexts, each with its own tables.
+//  All items conform to ShadowDark Core Rules.
+//  No invented items, spells, or equipment not in the core book.
+//
+//  To edit: find the context key below and change the string entries.
+//  To add entries, add strings AND update the roll(N) in rollLootTable().
+//
+// ════════════════════════════════════════════════════════════════
+
+// ── POCKETS / BODY ───────────────────────────────────────────────
+// Quick search of a defeated individual. Fast and light.
+// d6 coin result, d8 gear result, d6 oddity result.
+const LOOT_POCKETS = {
+  // What coin, if any (d6 — 1-2 nothing, 3-6 something)
+  coin: [
+    null,
+    "Nothing — empty pockets",
+    "Nothing — they spent it or never had it",
+    "A few coppers — 1d6 cp",
+    "Some silver — 1d6 sp",
+    "Mixed coin — 1d4 sp and 1d6 cp",
+    "Decent purse — 1d6 sp"
+  ],
+  // Personal gear found on the body (d8)
+  gear: [
+    null,
+    "Nothing useful",
+    "Flint and steel",
+    "Short length of rope",
+    "Rations — 1d3 days worth",
+    "Torch or two",
+    "Small knife (counts as dagger)",
+    "Waterskin, half full",
+    "Miscellaneous tools — roll to determine if relevant"
+  ],
+  // Oddity or personal item (d6 — 1-3 nothing, 4-6 something)
+  oddity: [
+    null,
+    "Nothing personal of note",
+    "Nothing personal of note",
+    "Nothing personal of note",
+    "A scrap of paper — note, map fragment, or list",
+    "A small token — religious, personal, or identifying",
+    "Something out of place — too fine, too strange, or too relevant"
+  ]
+};
+
+// ── STASH / OFFICE ───────────────────────────────────────────────
+// Searching a hideout, desk, cache, or room.
+// Two wealth tiers: poor (desperate gang / abandoned) vs rich (successful operation).
+const LOOT_STASH = {
+  poor: {
+    // d6 coin result
+    coin: [
+      null,
+      "Nothing — cleaned out already",
+      "Scattered coppers — 2d6 cp",
+      "Small purse — 1d6 sp",
+      "Coin pouch — 2d6 sp",
+      "Hidden stash — 1d6 sp and 2d6 cp",
+      "Modest savings — 1d10 sp"
+    ],
+    // d8 supplies and equipment
+    gear: [
+      null,
+      "Basic rations — 1d6 days",
+      "Rope, 50 ft",
+      "Torches — 1d6",
+      "Lantern, no oil",
+      "Lockpicks, worn",
+      "Crowbar",
+      "Mixed tools — hammer, spikes, etc.",
+      "Bedroll and blanket"
+    ],
+    // d6 documents or valuables
+    valuables: [
+      null,
+      "Nothing of value",
+      "Nothing of value",
+      "Wanted poster — possibly relevant",
+      "Partial map or rough directions",
+      "Ledger with names and debts",
+      "Small personal cache — jewelry worth 1d6 sp"
+    ]
+  },
+  rich: {
+    // d6 coin result
+    coin: [
+      null,
+      "Coin box — 2d6 sp",
+      "Strongbox — 1d6 gp and 2d6 sp",
+      "Hidden drawer — 2d6 gp",
+      "Lockbox — 1d4 gp and trade goods worth 1d6 gp",
+      "Operational funds — 1d10 gp",
+      "Major stash — 2d10 gp, possibly more elsewhere"
+    ],
+    // d8 quality equipment
+    gear: [
+      null,
+      "Quality rope and tools",
+      "Oil flasks — 1d6",
+      "Healing potion (1 HP per die, heals 1d4 HP)",
+      "Fine lockpicks — bonus to attempts",
+      "Crossbow bolts — 2d6",
+      "Lantern and oil for 6 hours",
+      "Manacles with key",
+      "Rations — 1d6 days, preserved"
+    ],
+    // d6 documents and valuables
+    valuables: [
+      null,
+      "Contracts or ledger — names, payments, operations",
+      "Jewelry — rings or chains worth 2d6 sp",
+      "Sealed letter — addressed to someone important",
+      "Small gemstone — worth 1d6 gp",
+      "Quality weapon — one item from SD weapon list",
+      "Deed, writ, or official document — significant"
+    ]
+  }
+};
+
+// ── CAVE / WILDERNESS ─────────────────────────────────────────────
+// Searching a natural area: creature lair, cache, old camp, hollow tree.
+const LOOT_CAVE = {
+  // d6 — is there even anything here?
+  presence: [
+    null,
+    "Nothing — bare rock and old bones",
+    "Nothing — stripped clean long ago",
+    "Nothing of value",
+    "Something small — roll gear",
+    "A cache of some kind — roll gear and coin",
+    "A proper hoard — roll all three"
+  ],
+  // d8 — what kind of gear or supply
+  gear: [
+    null,
+    "Old rations — spoiled or barely edible",
+    "Abandoned equipment — roll condition",
+    "Rope and pitons — left by a previous explorer",
+    "Hunting supplies — snares, skinning knife",
+    "Torches — 1d4 remaining",
+    "Waterskin and flint",
+    "Creature materials — claws, hide, teeth — value 1d6 sp to the right buyer",
+    "Preserved cache — rations 1d6 days, wrapped carefully"
+  ],
+  // d6 — coin or tradeable goods
+  coin: [
+    null,
+    "No coin",
+    "No coin",
+    "Scattered coin — 1d6 sp, filthy and old",
+    "Creature's collected shiny objects — 1d6 sp worth",
+    "Buried pouch — 2d6 sp",
+    "Previous explorer's purse — 1d6 sp and 1d4 gp"
+  ],
+  // d6 — something unusual
+  unusual: [
+    null,
+    "Nothing unusual",
+    "Nothing unusual",
+    "A carved token or marker — someone was here deliberately",
+    "Bones of a previous adventurer — with gear, roll once on gear",
+    "A natural gem or mineral — worth 1d6 gp rough",
+    "Something that should not be here — too fine, too recent, too strange"
+  ]
+};
+
+// ── DUNGEON / CRYPT ───────────────────────────────────────────────
+// Searching constructed spaces: rooms, sarcophagi, niches, hidden compartments.
+// All items strictly SD Core Rules canon.
+const LOOT_DUNGEON = {
+  // d6 — coin and mundane valuables
+  coin: [
+    null,
+    "No coin — taken long ago",
+    "Old coin — 1d6 sp, tarnished",
+    "Mixed coin — 2d6 sp and 1d6 cp",
+    "Coin cache — 1d6 gp and 1d6 sp",
+    "Offering bowl — 2d6 sp in old coin",
+    "Hidden compartment — 1d4 gp"
+  ],
+  // d8 — jewelry and trade goods
+  valuables: [
+    null,
+    "Nothing recoverable",
+    "Tarnished jewelry — worth 1d6 sp",
+    "Fine jewelry — worth 1d6 gp",
+    "Gem — worth 1d4 gp, uncut",
+    "Carved idol — religious significance, worth 1d6 gp",
+    "Silver plate or vessel — worth 2d6 sp",
+    "Engraved weapon — decorative but functional, SD weapon list",
+    "Small art object — worth 1d6 gp to the right buyer"
+  ],
+  // d6 — scrolls and potions (rare — SD canon only)
+  // Healing potion is the core SD potion. Scrolls hold one spell.
+  magic: [
+    null,
+    "Nothing magical",
+    "Nothing magical",
+    "Nothing magical",
+    "Healing potion — restores 1d4 HP (SD core item)",
+    "Spell scroll — holds one random 1st-level spell",
+    "Unusual item — consult SD magic item tables or GM ruling"
+  ],
+  // d6 — equipment left behind
+  gear: [
+    null,
+    "Nothing usable",
+    "Corroded but functional weapon — SD weapon list",
+    "Old armor — leather or chain, functional if repaired",
+    "Adventurer's gear — rope, spikes, etc.",
+    "Ritual equipment — candles, chalk, incense — value 1d6 sp",
+    "Quality tool — lockpicks, crowbar, or similar"
+  ]
+};
+
+
+// ════════════════════════════════════════════════════════════════
+//
+//  NPC TABLE DATA
+//
+//  All tables drawn from or consistent with ShadowDark Core Rules.
+//  Ancestry, occupation, and attitude match SD's setting conventions.
+//  Reaction and loyalty use SD's social interaction framework.
+//
+// ════════════════════════════════════════════════════════════════
+
+const NPC_TABLES = {
+
+  // d10 — Ancestry (SD Core ancestries only)
+  ancestry: [
+    null,
+    "Human", "Human", "Human", "Human",
+    "Elf",
+    "Dwarf",
+    "Halfling",
+    "Half-orc",
+    "Goblin",
+    "Human" // weighted toward human, as SD implies
+  ],
+
+  // d20 — Occupation / role in the world
+  occupation: [
+    null,
+    "Laborer or dockworker",
+    "Farmer or herder",
+    "Merchant or trader",
+    "Innkeeper or tavern keeper",
+    "Guard or watchman",
+    "Soldier or mercenary",
+    "Thief or cutpurse",
+    "Fence or black market dealer",
+    "Priest or acolyte",
+    "Healer or herbalist",
+    "Blacksmith or weaponsmith",
+    "Carpenter or mason",
+    "Hunter or trapper",
+    "Sailor or river boatman",
+    "Scribe or clerk",
+    "Criminal enforcer",
+    "Beggar or vagrant",
+    "Spy or informant",
+    "Minor noble or official",
+    "Scholar or sage"
+  ],
+
+  // d8 — Disposition toward the party on first meeting
+  disposition: [
+    null,
+    "Hostile — openly unfriendly, looking for an excuse",
+    "Suspicious — wary, guarded, says little",
+    "Cautious — polite but keeps distance",
+    "Neutral — indifferent, no strong feeling either way",
+    "Curious — interested, asks questions",
+    "Friendly — warm, willing to talk",
+    "Helpful — actively wants to assist",
+    "Desperate — needs something badly, will cooperate to get it"
+  ],
+
+  // d6 — Reaction in an encounter or confrontation
+  reaction: [
+    null,
+    "Attacks or escalates immediately",
+    "Threatens — posturing, not yet committed",
+    "Demands — wants something before cooperating",
+    "Wary — will talk but keeps hand on weapon",
+    "Cooperative — willing to negotiate",
+    "Deferential — compliant, wants no trouble"
+  ],
+
+  // d6 — Cooperation under pressure (interrogation, persuasion, threat)
+  coop: [
+    null,
+    "Refuses entirely — will not speak",
+    "Deflects — partial truths, no real information",
+    "Reluctant — shares something small if pressed",
+    "Cooperative — tells what they know if given reason",
+    "Eager — wants to be helpful, possibly too helpful",
+    "Breaks quickly — gives everything without much pressure"
+  ],
+
+  // d6 — Loyalty check for allies and hirelings
+  loyalty: [
+    null,
+    "Flees or betrays at first sign of serious danger",
+    "Wavers — will abandon if things get worse",
+    "Holds for now — loyalty contingent on outcome",
+    "Steady — stays unless situation becomes clearly hopeless",
+    "Loyal — requires significant cause to break",
+    "Steadfast — will not abandon under any foreseeable circumstance"
+  ],
+
+  // d8 — What motivates this NPC (recruitment context)
+  motivation: [
+    null,
+    "Coin — purely mercenary, no deeper interest",
+    "Survival — needs protection or a way out",
+    "Revenge — has a grudge that aligns with your goals",
+    "Loyalty — attached to someone in or near your group",
+    "Curiosity — wants to see where this leads",
+    "Obligation — owes a debt, real or perceived",
+    "Belief — shares a cause or conviction with you",
+    "Desperation — out of options, you are the least bad one"
+  ],
+
+  // d8 — What they want in exchange (recruitment ask)
+  ask: [
+    null,
+    "Coin — a fair daily rate, paid in advance",
+    "A share of found treasure",
+    "Protection — keep them alive, that is the deal",
+    "Information — tell them what you know about the objective",
+    "A specific favor — unrelated to the current job",
+    "Recognition — to be treated as an equal, not a tool",
+    "Passage — get them somewhere safe after this is done",
+    "Nothing yet — but they will collect eventually"
+  ],
+
+  // d6 — What they can actually do (capability)
+  capability: [
+    null,
+    "Unskilled — can carry, watch, or distract; little else",
+    "Capable — competent at one useful task",
+    "Trained — has a real skill relevant to your situation",
+    "Experienced — has done this kind of thing before",
+    "Skilled — genuinely good, worth having",
+    "Exceptional — rare find; has abilities you currently lack"
+  ],
+
+  // d6 — Name flavor origin (for on-the-fly naming feel)
+  nameFlavor: [
+    null,
+    "Common — plain, forgettable, deliberately so",
+    "Regional — marks them as from somewhere specific",
+    "Occupational — a name that came from what they do",
+    "Inherited — family name carries weight, good or bad",
+    "Nickname — what everyone calls them; real name forgotten",
+    "Unusual — stands out; they either own it or resent it"
+  ]
+};
+
+
+// ════════════════════════════════════════════════════════════════
+//  LOOT STATE & LOGIC
+// ════════════════════════════════════════════════════════════════
+
+let lootCtx    = 'pockets';
+let lootWealth = 'poor';
+
+const LOOT_INFO = {
+  pockets: "Quick search of a defeated individual — coin, carried gear, personal items.",
+  stash:   "Searching a hideout, desk, office, or known cache. Toggle wealth tier above.",
+  cave:    "Natural setting search — creature lair, old camp, hidden hollow, rock cache.",
+  dungeon: "Architectural search — room, sarcophagus, niche, hidden compartment, altar."
+};
+
+function setLootCtx(ctx, el) {
+  lootCtx = ctx;
+  document.querySelectorAll('.loot-ctx-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('wealth-row').classList.toggle('visible', ctx === 'stash');
+  document.getElementById('loot-info-box').textContent = LOOT_INFO[ctx];
+  renderLootTables();
+}
+
+function setWealth(w, el) {
+  lootWealth = w;
+  document.querySelectorAll('.wealth-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderLootTables();
+}
+
+// Build the loot table cards for the current context
+function renderLootTables() {
+  const container = document.getElementById('loot-tables');
+  let tables = [];
+
+  if (lootCtx === 'pockets') {
+    tables = [
+      { id: 'loot-coin',    label: 'Coin',    die: 'd6',  key: 'coin',   data: LOOT_POCKETS.coin },
+      { id: 'loot-gear',    label: 'Gear',    die: 'd8',  key: 'gear',   data: LOOT_POCKETS.gear },
+      { id: 'loot-oddity',  label: 'Oddity',  die: 'd6',  key: 'oddity', data: LOOT_POCKETS.oddity }
+    ];
+  } else if (lootCtx === 'stash') {
+    const src = LOOT_STASH[lootWealth];
+    tables = [
+      { id: 'loot-coin',      label: 'Coin',       die: 'd6', key: 'coin',      data: src.coin },
+      { id: 'loot-gear',      label: 'Gear',        die: 'd8', key: 'gear',      data: src.gear },
+      { id: 'loot-valuables', label: 'Documents & Valuables', die: 'd6', key: 'valuables', data: src.valuables }
+    ];
+  } else if (lootCtx === 'cave') {
+    tables = [
+      { id: 'loot-presence', label: 'Anything Here?', die: 'd6', key: 'presence', data: LOOT_CAVE.presence },
+      { id: 'loot-gear',     label: 'Gear / Supply',  die: 'd8', key: 'gear',     data: LOOT_CAVE.gear },
+      { id: 'loot-coin',     label: 'Coin / Trade',   die: 'd6', key: 'coin',     data: LOOT_CAVE.coin },
+      { id: 'loot-unusual',  label: 'Unusual',        die: 'd6', key: 'unusual',  data: LOOT_CAVE.unusual }
+    ];
+  } else if (lootCtx === 'dungeon') {
+    tables = [
+      { id: 'loot-coin',      label: 'Coin & Valuables', die: 'd6', key: 'coin',      data: LOOT_DUNGEON.coin },
+      { id: 'loot-valuables', label: 'Objects & Jewelry', die: 'd8', key: 'valuables', data: LOOT_DUNGEON.valuables },
+      { id: 'loot-magic',     label: 'Magic (Rare)',      die: 'd6', key: 'magic',     data: LOOT_DUNGEON.magic },
+      { id: 'loot-gear',      label: 'Equipment',         die: 'd6', key: 'gear',      data: LOOT_DUNGEON.gear }
+    ];
+  }
+
+  container.innerHTML = tables.map(t => `
+    <div class="loot-card">
+      <div class="loot-card-header">
+        <span class="table-label">${t.label}</span>
+        <span class="die-badge">${t.die}</span>
+      </div>
+      <div class="loot-result-row">
+        <div class="result-display empty" id="${t.id}">—</div>
+        <button class="btn-roll" onclick="rollLootTable('${t.id}',${JSON.stringify(t.data)})">Roll</button>
+      </div>
+    </div>`).join('');
+}
+
+function rollLootTable(id, data) {
+  const n = data.length - 1; // data[0] is null
+  const r = roll(n);
+  setRes(id, `${rn(r)}${data[r]}`, true);
+}
+
+// Initialise loot panel on load
+function initLoot() {
+  document.getElementById('loot-info-box').textContent = LOOT_INFO['pockets'];
+  renderLootTables();
+}
+
+
+// ════════════════════════════════════════════════════════════════
+//  NPC LOGIC
+// ════════════════════════════════════════════════════════════════
+
+function rollNPCSingle(which) {
+  const map = {
+    reaction:    { id: 'res-npc-reaction',    data: NPC_TABLES.reaction },
+    coop:        { id: 'res-npc-coop',        data: NPC_TABLES.coop },
+    loyalty:     { id: 'res-npc-loyalty',     data: NPC_TABLES.loyalty },
+    disposition: { id: 'res-npc-disposition', data: NPC_TABLES.disposition },
+    motivation:  { id: 'res-npc-motivation',  data: NPC_TABLES.motivation },
+    ask:         { id: 'res-npc-ask',         data: NPC_TABLES.ask },
+    capability:  { id: 'res-npc-capability',  data: NPC_TABLES.capability }
+  };
+  const entry = map[which];
+  if (!entry) return;
+  const n = entry.data.length - 1;
+  const r = roll(n);
+  setRes(entry.id, `${rn(r)}${entry.data[r]}`, true);
+}
+
+function generateNPC() {
+  const ancestry   = NPC_TABLES.ancestry[roll(10)];
+  const occ        = NPC_TABLES.occupation[roll(20)];
+  const disp       = NPC_TABLES.disposition[roll(8)];
+  const nameFlav   = NPC_TABLES.nameFlavor[roll(6)];
+
+  const box = document.getElementById('npc-quick-result');
+  box.style.display = 'block';
+  box.className = 'npc-generate-result revealed';
+  box.innerHTML = `
+    <div class="room-line"><span class="room-key">Ancestry</span> <span class="room-val">${ancestry}</span></div>
+    <div class="room-line"><span class="room-key">Occupation</span> <span class="room-val">${occ}</span></div>
+    <div class="room-line"><span class="room-key">Disposition</span> <span class="room-val">${disp}</span></div>
+    <div class="room-line"><span class="room-key">Name feel</span> <span class="room-val">${nameFlav}</span></div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
 //  NAV
 // ════════════════════════════════════════════════════════════════
 
@@ -1106,6 +1750,9 @@ function showPanel(name, el) {
   if (p)  p.classList.add('active');
   if (el) el.classList.add('active');
 }
+
+// Initialise panels that need setup on page load
+window.addEventListener('DOMContentLoaded', () => { initLoot(); });
 </script>
 </body>
 </html>
