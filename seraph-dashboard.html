@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Seraph's Oracle</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
@@ -14,19 +14,20 @@
     --stone-raised: #3a3028;
     --stone-border: #4a3e30;
     --stone-rim: #6a5840;
-    --ink-faint: #8a7a62;
-    --ink-mid: #b09a78;
-    --ink-bright: #d4bc94;
-    --parchment: #e8d9b8;
-    --parchment-warm: #f0e4c4;
+    --ink-faint: #9a8a70;
+    --ink-mid: #c0a882;
+    --ink-bright: #ddc8a0;
+    --parchment: #eeddb8;
+    --parchment-warm: #f5e8cc;
     --ember: #c8622a;
     --ember-bright: #e07840;
-    --ember-glow: #f09050;
     --gold-dim: #8a6a30;
     --gold-mid: #b08840;
     --gold-bright: #d4a850;
-    --result-bg: #1e1a12;
+    --result-bg: #181410;
     --result-border: #5a4a32;
+    --result-text: #f0e0c0;
+    --crossover-color: #7ab8d4;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,68 +36,64 @@
     background-color: var(--stone-deepest);
     background-image:
       radial-gradient(ellipse at 20% 20%, rgba(80,60,30,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 80%, rgba(60,40,20,0.06) 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      radial-gradient(ellipse at 80% 80%, rgba(60,40,20,0.06) 0%, transparent 50%);
     color: var(--ink-bright);
     font-family: 'Crimson Text', Georgia, serif;
-    font-size: 17px;
-    line-height: 1.5;
+    font-size: 19px;
+    line-height: 1.55;
     min-height: 100vh;
   }
 
-  /* ── HEADER ── */
   header {
     text-align: center;
-    padding: 2.4rem 1rem 1.4rem;
+    padding: 2rem 1rem 1.2rem;
     border-bottom: 1px solid var(--stone-border);
-    background: linear-gradient(180deg, rgba(30,24,14,0.95) 0%, rgba(20,16,10,0.8) 100%);
+    background: linear-gradient(180deg, rgba(30,24,14,0.98) 0%, rgba(20,16,10,0.85) 100%);
     position: relative;
   }
   header::after {
     content: '';
     position: absolute;
-    bottom: -1px; left: 10%; right: 10%;
+    bottom: -1px; left: 8%; right: 8%;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold-mid), var(--gold-dim), transparent);
   }
   .header-rune {
-    font-size: 0.7rem;
-    letter-spacing: 0.4em;
+    font-size: 0.65rem;
+    letter-spacing: 0.45em;
     color: var(--ink-faint);
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
   }
   h1 {
     font-family: 'Cinzel', serif;
-    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    font-size: clamp(1.7rem, 6vw, 2.6rem);
     font-weight: 700;
     color: var(--parchment-warm);
     letter-spacing: 0.08em;
-    text-shadow: 0 0 30px rgba(200,120,40,0.3), 0 2px 4px rgba(0,0,0,0.8);
+    text-shadow: 0 0 30px rgba(200,120,40,0.3), 0 2px 4px rgba(0,0,0,0.9);
   }
   .header-sub {
     font-style: italic;
     color: var(--ink-faint);
     font-size: 0.95rem;
-    margin-top: 0.3rem;
+    margin-top: 0.25rem;
   }
 
-  /* ── NAV TABS ── */
   nav {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 0;
     background: var(--stone-dark);
     border-bottom: 1px solid var(--stone-border);
-    padding: 0 0.5rem;
+    padding: 0 0.3rem;
   }
   .tab {
     font-family: 'Cinzel', serif;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 0.75rem 1.1rem;
+    padding: 0.8rem 0.9rem;
     cursor: pointer;
     color: var(--ink-faint);
     border-bottom: 2px solid transparent;
@@ -105,124 +102,91 @@
     white-space: nowrap;
   }
   .tab:hover { color: var(--ink-bright); }
-  .tab.active {
-    color: var(--gold-mid);
-    border-bottom-color: var(--ember);
-  }
-  .tab.stub { opacity: 0.45; cursor: default; }
+  .tab.active { color: var(--gold-mid); border-bottom-color: var(--ember); }
+  .tab.stub { opacity: 0.4; cursor: default; }
   .tab.stub:hover { color: var(--ink-faint); }
 
-  /* ── MAIN CONTENT ── */
   main {
-    max-width: 860px;
+    max-width: 820px;
     margin: 0 auto;
-    padding: 1.8rem 1.2rem 3rem;
+    padding: 1.6rem 1rem 3rem;
   }
-
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* ── SECTION TITLE ── */
   .section-title {
     font-family: 'Cinzel', serif;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--gold-mid);
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-bottom: 1.2rem;
-    padding-bottom: 0.5rem;
+    margin-bottom: 1.1rem;
+    padding-bottom: 0.45rem;
     border-bottom: 1px solid var(--stone-border);
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
-  .section-title::before {
-    content: '✦';
-    color: var(--ember);
-    font-size: 0.7rem;
-  }
+  .section-title::before { content: '✦'; color: var(--ember); font-size: 0.65rem; }
 
-  /* ── COMING SOON ── */
   .coming-soon {
     text-align: center;
     padding: 4rem 2rem;
     color: var(--ink-faint);
     font-style: italic;
+    font-size: 1.05rem;
   }
-  .coming-soon .rune { font-size: 2rem; margin-bottom: 1rem; opacity: 0.3; }
+  .coming-soon .rune { font-size: 2rem; margin-bottom: 1rem; opacity: 0.25; }
 
-  /* ── ORACLE PANEL ── */
-  .oracle-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  @media (max-width: 500px) { .oracle-grid { grid-template-columns: 1fr; } }
-
-  /* ── GENERATE ALL BUTTON ── */
   .btn-generate {
     display: block;
     width: 100%;
-    padding: 0.9rem 1.5rem;
+    padding: 1rem 1.5rem;
     background: linear-gradient(135deg, var(--stone-raised) 0%, var(--stone-surface) 100%);
     border: 1px solid var(--ember);
     border-radius: 2px;
     color: var(--parchment-warm);
     font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.15em;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     cursor: pointer;
-    margin-bottom: 1.5rem;
-    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(200,150,80,0.1);
-    position: relative;
-    overflow: hidden;
+    margin-bottom: 1.3rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
-  .btn-generate::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(200,130,60,0.08), transparent);
-    transition: left 0.4s;
-  }
-  .btn-generate:hover::before { left: 100%; }
   .btn-generate:hover {
     border-color: var(--ember-bright);
-    box-shadow: 0 2px 16px rgba(200,100,40,0.25), inset 0 1px 0 rgba(200,150,80,0.15);
-    color: var(--parchment-warm);
+    box-shadow: 0 2px 20px rgba(200,100,40,0.3);
   }
   .btn-generate:active { transform: translateY(1px); }
 
-  /* ── TABLE CARDS ── */
   .table-card {
     background: var(--stone-mid);
     border: 1px solid var(--stone-border);
     border-radius: 2px;
-    padding: 1rem 1.1rem 1.1rem;
-    margin-bottom: 0.9rem;
+    padding: 0.85rem 1rem 1rem;
+    margin-bottom: 0.8rem;
   }
   .table-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.6rem;
   }
   .table-label {
     font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-mid);
+    font-weight: 600;
   }
   .die-badge {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--ink-faint);
     font-style: italic;
-    font-family: 'Crimson Text', serif;
   }
   .btn-roll {
     background: var(--stone-raised);
@@ -233,182 +197,258 @@
     font-size: 0.62rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 0.28rem 0.7rem;
+    padding: 0.36rem 0.9rem;
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
+    flex-shrink: 0;
   }
-  .btn-roll:hover {
-    color: var(--gold-mid);
-    border-color: var(--gold-dim);
-  }
+  .btn-roll:hover { color: var(--gold-bright); border-color: var(--gold-dim); }
+
   .result-display {
     background: var(--result-bg);
     border: 1px solid var(--result-border);
     border-radius: 2px;
-    padding: 0.55rem 0.8rem;
-    min-height: 2.2rem;
+    padding: 0.6rem 0.85rem;
+    min-height: 2.5rem;
     font-style: italic;
-    color: var(--parchment);
-    font-size: 1rem;
-    line-height: 1.4;
-    transition: color 0.3s;
+    color: var(--result-text);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.45;
+    flex: 1;
   }
-  .result-display.empty { color: var(--ink-faint); font-size: 0.85rem; }
-  .result-display .roll-num {
+  .result-display.empty {
+    color: var(--ink-faint);
+    font-weight: 400;
+    font-size: 0.9rem;
     font-style: normal;
-    font-size: 0.7rem;
+  }
+  .roll-num {
+    font-style: normal;
+    font-size: 0.68rem;
     color: var(--ember);
     font-family: 'Cinzel', serif;
+    font-weight: 400;
     margin-right: 0.4rem;
   }
+  .row-flex { display: flex; gap: 0.6rem; align-items: flex-start; }
 
-  /* ── COMBINED RESULT ── */
   .combined-result {
     background: var(--result-bg);
     border: 1px solid var(--result-border);
     border-radius: 2px;
-    padding: 1.1rem 1.3rem;
-    margin-bottom: 1.8rem;
-    min-height: 3.5rem;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.6rem;
   }
   .combined-result.empty {
     text-align: center;
     color: var(--ink-faint);
     font-style: italic;
-    padding: 1.8rem;
-    font-size: 0.9rem;
+    padding: 2rem;
+    font-size: 1rem;
   }
-  .combined-result .room-line {
+  .room-line {
     display: flex;
-    gap: 0.6rem;
-    padding: 0.28rem 0;
-    border-bottom: 1px solid rgba(90,74,50,0.3);
+    gap: 0.7rem;
+    padding: 0.34rem 0;
+    border-bottom: 1px solid rgba(90,74,50,0.25);
     align-items: baseline;
   }
-  .combined-result .room-line:last-child { border-bottom: none; }
+  .room-line:last-child { border-bottom: none; }
   .room-key {
     font-family: 'Cinzel', serif;
     font-size: 0.62rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ink-faint);
-    min-width: 88px;
+    min-width: 92px;
     flex-shrink: 0;
+    padding-top: 0.12rem;
   }
   .room-val {
-    color: var(--parchment);
+    color: var(--result-text);
     font-style: italic;
-    font-size: 1rem;
-  }
-  .room-val .roll-num {
-    font-style: normal;
-    font-size: 0.68rem;
-    color: var(--ember);
-    font-family: 'Cinzel', serif;
-    margin-right: 0.3rem;
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.4;
   }
   .twist-line .room-key { color: var(--ember); }
   .twist-line .room-val { color: var(--ember-bright); }
+  .crossover-line .room-key { color: var(--crossover-color); }
+  .crossover-line .room-val { color: var(--crossover-color); }
 
-  /* dungeon table grid - 2 columns on wider screens */
   .dungeon-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.9rem;
+    gap: 0.8rem;
   }
-  @media (max-width: 600px) { .dungeon-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .dungeon-grid { grid-template-columns: 1fr; } }
   .dungeon-grid .table-card { margin-bottom: 0; }
-  .dungeon-grid .full-width { grid-column: 1 / -1; }
+  .full-width { grid-column: 1 / -1; }
 
-  /* procedure box */
-  .procedure-box {
+  .mode-toggle {
+    display: flex;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--stone-border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: var(--stone-mid);
+    border: none;
+    border-right: 1px solid var(--stone-border);
+    color: var(--ink-faint);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .mode-btn:last-child { border-right: none; }
+  .mode-btn.active { background: var(--stone-raised); color: var(--parchment-warm); }
+  .mode-btn:hover:not(.active) { color: var(--ink-bright); }
+
+  .scope-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .scope-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .scope-select {
+    background: var(--stone-mid);
+    border: 1px solid var(--stone-border);
+    border-radius: 2px;
+    color: var(--parchment);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 1rem;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    flex: 1;
+    min-width: 160px;
+  }
+  .room-counter {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--gold-mid);
+    background: var(--stone-mid);
+    border: 1px solid var(--stone-border);
+    border-radius: 2px;
+    padding: 0.32rem 0.7rem;
+    white-space: nowrap;
+  }
+  .btn-reset-scope {
+    background: none;
+    border: 1px solid var(--stone-border);
+    border-radius: 2px;
+    color: var(--ink-faint);
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.32rem 0.6rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-reset-scope:hover { color: var(--ember); border-color: var(--ember); }
+  .scope-info {
+    font-style: italic;
+    color: var(--ink-faint);
+    font-size: 0.88rem;
+    width: 100%;
+    min-height: 1.2rem;
+  }
+
+  .info-box {
     background: var(--stone-mid);
     border: 1px solid var(--stone-border);
     border-left: 3px solid var(--ember);
     border-radius: 2px;
-    padding: 0.8rem 1.1rem;
-    margin-bottom: 1.4rem;
-    font-size: 0.88rem;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1.1rem;
+    font-size: 0.92rem;
     color: var(--ink-mid);
-    display: flex;
-    gap: 1.2rem;
-    flex-wrap: wrap;
+    line-height: 1.6;
   }
-  .procedure-box span { white-space: nowrap; }
-  .procedure-box span::before { content: '·  '; color: var(--ember); }
+  .info-box.cave-mode { border-left-color: #6aaa88; }
 
-  /* twist toggle */
-  .twist-chance {
-    font-size: 0.8rem;
-    color: var(--ink-faint);
+  .oracle-rule {
+    background: var(--stone-mid);
+    border: 1px solid var(--stone-border);
+    border-radius: 2px;
+    padding: 0.85rem 1.1rem;
+    font-size: 1.05rem;
+    color: var(--ink-mid);
     font-style: italic;
-    margin-top: 0.4rem;
-    text-align: right;
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
   }
-
-  /* ── ORACLE YES/NO ── */
   .oracle-result-big {
     text-align: center;
-    padding: 1.8rem 1rem;
+    padding: 2rem 1rem 1.6rem;
     background: var(--result-bg);
     border: 1px solid var(--result-border);
     border-radius: 2px;
-    margin-bottom: 1rem;
   }
   .oracle-answer {
     font-family: 'Cinzel', serif;
-    font-size: 2.2rem;
+    font-size: clamp(2.4rem, 9vw, 3.2rem);
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
   }
   .oracle-answer.yes { color: var(--parchment-warm); }
   .oracle-answer.no { color: var(--ink-mid); }
   .oracle-answer.twist { color: var(--ember-bright); }
   .oracle-modifier {
     font-style: italic;
-    color: var(--ink-faint);
-    margin-top: 0.3rem;
-    font-size: 1rem;
+    color: var(--ink-mid);
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    min-height: 1.8rem;
   }
   .oracle-roll-display {
     font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     color: var(--ink-faint);
-    margin-top: 0.5rem;
+    margin-top: 0.6rem;
     letter-spacing: 0.1em;
   }
-  .oracle-rule {
-    background: var(--stone-mid);
-    border: 1px solid var(--stone-border);
-    border-radius: 2px;
-    padding: 0.7rem 1rem;
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--stone-border);
+    margin: 1.5rem 0;
+  }
+  .twist-note {
     font-size: 0.85rem;
     color: var(--ink-faint);
     font-style: italic;
-    margin-bottom: 1rem;
-    line-height: 1.6;
+    margin-top: 0.45rem;
   }
 
-  /* separator */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--stone-border);
-    margin: 1.6rem 0;
-  }
-
-  /* scroll reveal */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  .revealed { animation: fadeUp 0.3s ease forwards; }
+  .revealed { animation: fadeUp 0.25s ease forwards; }
 
-  /* flash on new roll */
-  @keyframes flash {
-    0% { color: var(--gold-bright); }
-    100% { color: var(--parchment); }
+  @keyframes flashResult {
+    0%   { color: var(--gold-bright); }
+    100% { color: var(--result-text); }
   }
-  .flash-result { animation: flash 0.6s ease forwards; }
+  .flash-result { animation: flashResult 0.5s ease forwards; }
 </style>
 </head>
 <body>
@@ -420,8 +460,8 @@
 </header>
 
 <nav>
-  <div class="tab active" onclick="showPanel('oracle')">Oracle</div>
-  <div class="tab" onclick="showPanel('dungeon')">Dungeon</div>
+  <div class="tab active" onclick="showPanel('oracle',this)">Oracle</div>
+  <div class="tab" onclick="showPanel('dungeon',this)">Dungeon</div>
   <div class="tab stub" title="Coming soon">Prompts</div>
   <div class="tab stub" title="Coming soon">Loot</div>
   <div class="tab stub" title="Coming soon">NPC</div>
@@ -430,19 +470,14 @@
 
 <main>
 
-  <!-- ══════════════════════════════════════════════
-       ORACLE PANEL
-  ═══════════════════════════════════════════════ -->
+  <!-- ORACLE -->
   <div id="panel-oracle" class="panel active">
     <div class="section-title">Yes / No Oracle</div>
-
     <div class="oracle-rule">
       1–9 = No &nbsp;·&nbsp; 10 = Twist &nbsp;·&nbsp; 11–20 = Yes<br>
-      Odd numbers add <em>"But…"</em> — you decide the complication. &nbsp;Twists trigger a Prompt roll.
+      Odd rolls add <em>"But…"</em> — you name the complication. &nbsp;A Twist triggers a Prompt roll.
     </div>
-
     <button class="btn-generate" onclick="rollOracle()">⚄ &nbsp; Roll Oracle (d20)</button>
-
     <div class="oracle-result-big" id="oracle-result-box" style="display:none;">
       <div class="oracle-answer" id="oracle-answer"></div>
       <div class="oracle-modifier" id="oracle-modifier"></div>
@@ -450,123 +485,131 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       DUNGEON PANEL
-  ═══════════════════════════════════════════════ -->
+  <!-- DUNGEON -->
   <div id="panel-dungeon" class="panel">
     <div class="section-title">Dungeon Generator</div>
 
-    <div class="procedure-box">
-      <span>Room Type</span>
-      <span>Size</span>
-      <span>Exits</span>
-      <span>Feature</span>
-      <span>Encounter</span>
-      <span>Atmosphere</span>
-      <span>Star Twist (opt.)</span>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-cave" onclick="setMode('cave')">⛰ Cave System</button>
+      <button class="mode-btn" id="btn-dungeon" onclick="setMode('dungeon')">🏛 Constructed Dungeon</button>
     </div>
 
-    <button class="btn-generate" onclick="generateRoom()">⚄ &nbsp; Generate Room (All Tables)</button>
-
-    <!-- Combined Result -->
-    <div id="room-combined" class="combined-result empty">
-      Roll to generate a room…
+    <div class="info-box cave-mode" id="info-cave">
+      Natural formations — organic, unpredictable. No scope needed; caves end when exits run out.
+      A rare crossover result means something <em>intentionally built</em> has been found in the dark.
     </div>
+
+    <div id="info-dungeon" style="display:none;">
+      <div class="info-box">
+        Built by someone, for a purpose. Set a scope to give the dungeon dramatic shape
+        without losing the discovery of rolling room by room.
+      </div>
+      <div class="scope-row">
+        <span class="scope-label">Scope</span>
+        <select class="scope-select" id="scope-select" onchange="updateScope()">
+          <option value="">— choose scope —</option>
+          <option value="outpost">Outpost (4–6 rooms)</option>
+          <option value="keep">Small Keep (8–12 rooms)</option>
+          <option value="stronghold">Stronghold (14–20 rooms)</option>
+          <option value="fortress">Fortress (25+ rooms)</option>
+        </select>
+        <div class="room-counter" id="room-counter" style="display:none;">
+          Room <span id="room-current">0</span> of <span id="room-max">—</span>
+        </div>
+        <button class="btn-reset-scope" id="btn-reset" onclick="resetScope()" style="display:none;">Reset</button>
+      </div>
+      <div class="scope-info" id="scope-info"></div>
+    </div>
+
+    <button class="btn-generate" onclick="generateRoom()">⚄ &nbsp; Generate Next Area</button>
+
+    <div id="room-combined" class="combined-result empty">Choose a mode and roll to generate your first area…</div>
 
     <hr class="divider">
 
-    <!-- Individual Tables -->
     <div class="dungeon-grid">
 
-      <!-- Room Type d20 -->
       <div class="table-card full-width">
         <div class="table-card-header">
-          <span class="table-label">Room Type</span>
+          <span class="table-label" id="label-type">Area Type</span>
           <span class="die-badge">d20</span>
         </div>
-        <div style="display:flex; gap:0.6rem; align-items:center;">
-          <div class="result-display empty" id="res-type" style="flex:1;">—</div>
-          <button class="btn-roll" onclick="rollTable('type')">Roll</button>
+        <div class="row-flex">
+          <div class="result-display empty" id="res-type">—</div>
+          <button class="btn-roll" onclick="rollSingle('type')">Roll</button>
         </div>
       </div>
 
-      <!-- Size d6 -->
       <div class="table-card">
         <div class="table-card-header">
           <span class="table-label">Size</span>
           <span class="die-badge">d6</span>
         </div>
-        <div style="display:flex; gap:0.6rem; align-items:center;">
-          <div class="result-display empty" id="res-size" style="flex:1;">—</div>
-          <button class="btn-roll" onclick="rollTable('size')">Roll</button>
+        <div class="row-flex">
+          <div class="result-display empty" id="res-size">—</div>
+          <button class="btn-roll" onclick="rollSingle('size')">Roll</button>
         </div>
       </div>
 
-      <!-- Exits d4 -->
       <div class="table-card">
         <div class="table-card-header">
           <span class="table-label">Exits</span>
           <span class="die-badge">d4</span>
         </div>
-        <div style="display:flex; gap:0.6rem; align-items:center;">
-          <div class="result-display empty" id="res-exits" style="flex:1;">—</div>
-          <button class="btn-roll" onclick="rollTable('exits')">Roll</button>
+        <div class="row-flex">
+          <div class="result-display empty" id="res-exits">—</div>
+          <button class="btn-roll" onclick="rollSingle('exits')">Roll</button>
         </div>
       </div>
 
-      <!-- Feature d12 -->
       <div class="table-card">
         <div class="table-card-header">
           <span class="table-label">Feature</span>
           <span class="die-badge">d12</span>
         </div>
-        <div style="display:flex; gap:0.6rem; align-items:center;">
-          <div class="result-display empty" id="res-feature" style="flex:1;">—</div>
-          <button class="btn-roll" onclick="rollTable('feature')">Roll</button>
+        <div class="row-flex">
+          <div class="result-display empty" id="res-feature">—</div>
+          <button class="btn-roll" onclick="rollSingle('feature')">Roll</button>
         </div>
       </div>
 
-      <!-- Encounter d6 + type -->
       <div class="table-card">
         <div class="table-card-header">
           <span class="table-label">Encounter</span>
           <span class="die-badge">d6 → d6</span>
         </div>
-        <div style="display:flex; gap:0.6rem; align-items:center;">
-          <div class="result-display empty" id="res-encounter" style="flex:1;">—</div>
-          <button class="btn-roll" onclick="rollTable('encounter')">Roll</button>
+        <div class="row-flex">
+          <div class="result-display empty" id="res-encounter">—</div>
+          <button class="btn-roll" onclick="rollSingle('encounter')">Roll</button>
         </div>
       </div>
 
-      <!-- Atmosphere d8 -->
       <div class="table-card">
         <div class="table-card-header">
           <span class="table-label">Atmosphere</span>
-          <span class="die-badge">d8</span>
+          <span class="die-badge">d10</span>
         </div>
-        <div style="display:flex; gap:0.6rem; align-items:center;">
-          <div class="result-display empty" id="res-atmo" style="flex:1;">—</div>
-          <button class="btn-roll" onclick="rollTable('atmo')">Roll</button>
+        <div class="row-flex">
+          <div class="result-display empty" id="res-atmo">—</div>
+          <button class="btn-roll" onclick="rollSingle('atmo')">Roll</button>
         </div>
       </div>
 
-      <!-- Star Twist optional -->
       <div class="table-card full-width">
         <div class="table-card-header">
           <span class="table-label">Star-Guided Twist</span>
-          <span class="die-badge">1-in-6 chance → d12</span>
+          <span class="die-badge">1-in-6 → d12</span>
         </div>
-        <div style="display:flex; gap:0.6rem; align-items:center;">
-          <div class="result-display empty" id="res-twist" style="flex:1;">—</div>
-          <button class="btn-roll" onclick="rollTable('twist')">Roll</button>
+        <div class="row-flex">
+          <div class="result-display empty" id="res-twist">—</div>
+          <button class="btn-roll" onclick="rollSingle('twist')">Roll</button>
         </div>
-        <div class="twist-chance">Optional — use sparingly. Rolls 1d6; twist only occurs on a 6.</div>
+        <div class="twist-note">Optional — fires only on a 6. Use sparingly.</div>
       </div>
 
-    </div><!-- /dungeon-grid -->
+    </div>
   </div>
 
-  <!-- Stubs -->
   <div id="panel-prompts" class="panel">
     <div class="section-title">Prompts</div>
     <div class="coming-soon"><div class="rune">⧖</div>Coming in the next build.</div>
@@ -587,97 +630,204 @@
 </main>
 
 <script>
-// ── TABLE DATA ──────────────────────────────────────────────
+// ─── TABLE DATA ────────────────────────────────────────────────
 
-const TABLES = {
+const CAVE = {
   type: [
-    null, // index 0 unused
-    "Corridor","Corridor","Corridor","Corridor",
-    "Small room","Small room","Small room",
-    "Medium room","Medium room","Medium room",
-    "Large room","Large room",
-    "Natural cave","Natural cave",
-    "Junction (3–4 passages)",
-    "Stairs (up or down)",
-    "Pit / chasm",
-    "Ruined chamber",
-    "Shrine / altar",
-    "Special — consult theme or improvise"
+    null,
+    "Narrow tunnel — single file, ceiling close overhead",
+    "Winding passage — curves hide what lies ahead",
+    "Wide tunnel — room to spread out, sounds carry far",
+    "Flooded passage — ankle to knee deep, cold and slow",
+    "Collapsed section — partial blockage, passable with effort",
+    "Branching tunnel — splits without warning",
+    "Small chamber — tight walls, defensible, close",
+    "Natural cavern — sprawling, ceiling lost in shadow",
+    "Sinkhole room — floor drops sharply at center",
+    "Underground pool — still water, depth unknown",
+    "Stalactite forest — stone pillars, hard to move through",
+    "Hollow — a pocket in the rock, barely room to stand",
+    "Crevasse crossing — narrow bridge of stone over a drop",
+    "Cathedral cavern — massive, echoing, awe-inspiring",
+    "Fungal grove — luminescent growth thick on every surface",
+    "Bone yard — remains of many creatures, old and fresh",
+    "Hot spring — mineral-rich water steams in the dark",
+    "Ancient streambed — carved smooth, dry for a long time",
+    "⇄ CROSSOVER — dressed stonework appears in the cave wall. Something was built here.",
+    "⇄ CROSSOVER — a carved archway, deliberate and old. The cave becomes something else."
   ],
   size: [
     null,
-    "Tiny (10×10 ft)",
-    "Small (20×20 ft)",
-    "Medium (30×30 ft)",
-    "Large (40×40 ft)",
-    "Huge (60×60 ft)",
-    "Irregular — cave-like, no clean walls"
+    "Constricted — barely passable, one at a time",
+    "Cramped — move with care",
+    "Modest — room to breathe, ten paces across",
+    "Spacious — twenty paces, room to fight",
+    "Expansive — fifty paces, edges unclear",
+    "Vast — the far wall is not visible"
   ],
   exits: [
     null,
-    "One exit",
-    "Two exits",
-    "Three exits",
-    "Four exits"
+    "Dead end — only the way you came",
+    "One passage forward",
+    "Two passages — a choice",
+    "Three passages — the cave divides seriously"
   ],
   feature: [
     null,
-    "Rubble and collapse — movement may be difficult",
-    "Old furniture — rotted, scattered, telling",
-    "Bones — picked clean, or not",
-    "Strange markings — carved, scorched, or painted",
-    "Water seepage — pools on the floor, walls weep",
-    "Fungal growth — pale and enormous",
-    "Broken statue — the face is gone or wrong",
-    "Arcane residue — something was cast here",
-    "Mechanical debris — gears, wire, an old trap",
-    "Webs — thick, old, and occupied",
-    "Tracks — something passes through regularly",
-    "Valuable item — roll Loot"
+    "Crystal formation — catches light in ways it shouldn't",
+    "Deep claw marks — something large passed this way",
+    "Underground stream — cold and fast, heard before seen",
+    "Phosphorescent moss — faint blue-green glow on the walls",
+    "Unreliable floor — stone shifts, possible sinkhole beneath",
+    "Cache of bones — a predator's den, or worse",
+    "Mineral deposit — colors that do not belong underground",
+    "Evidence of habitation — fire ring, refuse, long-cold camp",
+    "Choke-damp pocket — sulfur smell, flame gutters and dies",
+    "Lodestone vein — compass spins, metal objects feel heavy",
+    "Guano deep — something large roosts or roosted above",
+    "Hidden niche — naturally concealed, small and waiting"
   ],
   atmo: [
     null,
-    "Damp and cold — breath fogs, stone sweats",
-    "Stale air — the kind that hasn't moved in years",
-    "Metallic smell — blood, rust, or something older",
-    "Whispering echoes — sounds travel strangely here",
-    "Warm draft — air rising from somewhere below",
-    "Faint vibration — felt in the soles, not heard",
-    "Magical hum — just below the threshold of sound",
-    "Oppressive silence — even your footsteps seem muffled"
-  ],
-  twist: [
-    null,
-    "Constellation pattern traced in the dust",
-    "A star-shaped crack in the stone — recent",
-    "A drifting mote of cold light",
-    "Déjà vu — you have been here, or dreamed it",
-    "A whisper that sounds like prophecy",
-    "A symbol tied to your Star Map",
-    "A moment of perfect stillness — the world holds its breath",
-    "A flicker of future danger — vivid and gone",
-    "A guiding glimmer pulling toward one exit",
-    "A shadow that moves against the light",
-    "A creature seems briefly star-aligned — its behavior shifts",
-    "Cosmic anomaly — gravity, time, or light behaves wrongly"
+    "Cold and wet — stone weeps, every breath fogs",
+    "Absolute silence — sound dies at the entrance",
+    "Underground wind — a constant low moan through the rock",
+    "Mineral smell — clean and ancient, like deep earth",
+    "Warmth rising from below — volcanic or thermal source",
+    "Wrong echoes — sounds return too late, or from the wrong direction",
+    "Faint luminescence — source unclear, just enough to notice",
+    "Dripping rhythm — steady, from somewhere above, not stopping",
+    "Heavy air — breathing takes more effort than it should",
+    "Eerie stillness — the kind that suggests you are being watched"
   ],
   encounterType: [
     null,
-    "Humanoid",
-    "Beast",
-    "Undead",
-    "Aberration",
-    "Construct",
-    "Environmental hazard"
+    "Cave beast — something that belongs here",
+    "Vermin swarm — bats, insects, or worse in number",
+    "Predator — territorial, hungry, or guarding young",
+    "Wandering creature — lost or migrating through",
+    "Environmental hazard — gas, collapse, flood, or dark water",
+    "Humanoid — someone else is down here, and they know it"
   ]
 };
 
-// ── UTILITIES ───────────────────────────────────────────────
+const DUNGEON = {
+  type: [
+    null,
+    "Narrow corridor — torch brackets, arrow slits, deliberate design",
+    "Wide corridor — built for traffic, marks of long use",
+    "Angled corridor — turns sharply, sightlines cut intentionally",
+    "Corridor with alcoves — recessed spaces, each one a question",
+    "Collapsed corridor — partially passable, requires care",
+    "Guard room — bunks, weapon racks, signs of habitation",
+    "Storage chamber — crates and barrels, organized or ransacked",
+    "Cell block — iron doors, some open, some locked, some worse",
+    "Barracks — larger quarters, personal effects still present",
+    "Kitchen or larder — cold hearth, old smoke, smell of food",
+    "Shrine or chapel — dedicated to something, active or long dead",
+    "Audience chamber — built to impress, throne or raised dais",
+    "Scriptorium or study — shelves, a desk, papers or rot",
+    "Torture chamber — the tools are self-explanatory",
+    "Staircase — connecting levels, up or down or both",
+    "Junction hall — three or four passages converge here",
+    "Pit room — trap, disposal shaft, or deliberate obstacle",
+    "Collapsed chamber — beams down, ceiling cracked, unsafe",
+    "⇄ CROSSOVER — stonework gives way to raw cave. The dungeon was built around this.",
+    "⇄ CROSSOVER — a section of natural cavern incorporated into the structure. Older than the dungeon."
+  ],
+  size: [
+    null,
+    "Tight — ten by ten, barely functional",
+    "Small — twenty by twenty, one clear purpose",
+    "Standard — thirty by thirty, room to move and fight",
+    "Generous — forty by forty, multiple uses at once",
+    "Large — sixty by sixty, built to hold many",
+    "Hall-scale — long or wide, made to accommodate a crowd"
+  ],
+  exits: [
+    null,
+    "One exit — a dead end, or the passage narrows to nothing",
+    "Two exits — forward and one branch",
+    "Three exits — a meaningful decision",
+    "Four exits — a hub, significant traffic once passed here"
+  ],
+  feature: [
+    null,
+    "Ruined furniture — broken, scattered, telling a story",
+    "Bones — not buried, not arranged. Left where they fell.",
+    "Inscription on the wall — worn but legible if you study it",
+    "Barricade — hastily built from this side, from the inside",
+    "Old fire pit — ash cold but not ancient, within days",
+    "Arcane marking — deliberately placed, purpose unclear",
+    "Mechanical trap — set, triggered, or patiently waiting",
+    "Hidden compartment — in floor, wall, or above the ceiling",
+    "Desecrated shrine — something was done here on purpose",
+    "Chains and manacles — many, fixed to the walls, some occupied",
+    "Tracks — recent, multiple, moving with clear direction",
+    "Valuable — roll Loot"
+  ],
+  atmo: [
+    null,
+    "Stale air — has not moved in years, thick with age",
+    "Torch smoke — recent. Someone was here not long ago.",
+    "Blood smell — hard to say if it is old or fresh",
+    "Supernatural cold — no draft, just wrong temperature",
+    "Whispering — not quite words, not quite wind, not stopping",
+    "Distant sound — metal on stone, or a voice, or something else",
+    "Oppressive weight — the ceiling feels lower than it is",
+    "Magical residue — the air hums faintly with old workings",
+    "Rot and mildew — water damage, slow decay, soft underfoot",
+    "Uncanny stillness — even your breathing seems intrusive"
+  ],
+  encounterType: [
+    null,
+    "Humanoid — guards, cultists, bandits, or something organised",
+    "Undead — animated, purposeful, bound to this specific place",
+    "Beast — escaped, summoned, or kept deliberately as guard",
+    "Construct — mechanical or magical, still following its orders",
+    "Aberration — something that should not be here at all",
+    "Environmental hazard — trap, collapse, or magical discharge"
+  ]
+};
+
+const TWISTS = [
+  null,
+  "Constellation pattern traced in the dust — deliberate, and recent",
+  "A star-shaped crack in the stone, edges still sharp and clean",
+  "A drifting mote of cold light that illuminates nothing",
+  "Déjà vu — you have been here, or dreamed this place clearly",
+  "A whisper that sounds like a name — possibly yours",
+  "A symbol tied to your Star Map, here where it should not be",
+  "A moment of perfect stillness — the world holds its breath",
+  "A flicker of future danger — vivid, specific, already gone",
+  "A guiding glimmer — it pulls unmistakably toward one exit",
+  "A shadow moves against the light source",
+  "A creature pauses mid-motion — its eyes clear, briefly lucid",
+  "Cosmic wrongness — gravity, time, or light misbehaves briefly"
+];
+
+const SCOPE_DATA = {
+  outpost:    { label: "Outpost",      min: 4,  max: 6,  desc: "Tight and purposeful. Danger arrives fast." },
+  keep:       { label: "Small Keep",   min: 8,  max: 12, desc: "A few branches, one main objective, room for secrets." },
+  stronghold: { label: "Stronghold",   min: 14, max: 20, desc: "Multiple wings, possible factions, layered threats." },
+  fortress:   { label: "Fortress",     min: 25, max: 40, desc: "A campaign location. Sessions, not a session." }
+};
+
+// ─── STATE ────────────────────────────────────────────────────
+
+let currentMode = 'cave';
+let scopeMax    = null;
+let roomCount   = 0;
+
+// ─── UTILITIES ────────────────────────────────────────────────
 
 function roll(n) { return Math.floor(Math.random() * n) + 1; }
 
-function setResult(id, html, flash) {
+function rn(n) { return `<span class="roll-num">[${n}]</span>`; }
+
+function setRes(id, html, flash) {
   const el = document.getElementById(id);
+  if (!el) return;
   el.innerHTML = html;
   el.classList.remove('empty');
   if (flash) {
@@ -687,167 +837,178 @@ function setResult(id, html, flash) {
   }
 }
 
-// ── INDIVIDUAL ROLLS ────────────────────────────────────────
+function isCrossover(t) { return t && t.startsWith('⇄'); }
 
-function rollTable(which) {
-  let r, text;
-  if (which === 'type') {
-    r = roll(20);
-    setResult('res-type', `<span class="roll-num">[${r}]</span>${TABLES.type[r]}`, true);
-  } else if (which === 'size') {
-    r = roll(6);
-    setResult('res-size', `<span class="roll-num">[${r}]</span>${TABLES.size[r]}`, true);
-  } else if (which === 'exits') {
-    r = roll(4);
-    setResult('res-exits', `<span class="roll-num">[${r}]</span>${TABLES.exits[r]}`, true);
-  } else if (which === 'feature') {
-    r = roll(12);
-    setResult('res-feature', `<span class="roll-num">[${r}]</span>${TABLES.feature[r]}`, true);
-  } else if (which === 'encounter') {
-    r = roll(6);
-    if (r === 1) {
-      const t = roll(6);
-      setResult('res-encounter', `<span class="roll-num">[${r}→${t}]</span>Encounter: ${TABLES.encounterType[t]}`, true);
-    } else {
-      setResult('res-encounter', `<span class="roll-num">[${r}]</span>No encounter`, true);
-    }
-  } else if (which === 'atmo') {
-    r = roll(8);
-    setResult('res-atmo', `<span class="roll-num">[${r}]</span>${TABLES.atmo[r]}`, true);
-  } else if (which === 'twist') {
-    const chance = roll(6);
-    if (chance === 6) {
-      r = roll(12);
-      setResult('res-twist', `<span class="roll-num">[✦${r}]</span>${TABLES.twist[r]}`, true);
-    } else {
-      setResult('res-twist', `<span class="roll-num">[${chance}]</span>No twist`, true);
-    }
-  }
+// ─── MODE ─────────────────────────────────────────────────────
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btn-cave').classList.toggle('active', mode === 'cave');
+  document.getElementById('btn-dungeon').classList.toggle('active', mode === 'dungeon');
+  document.getElementById('info-cave').style.display    = mode === 'cave'    ? '' : 'none';
+  document.getElementById('info-dungeon').style.display = mode === 'dungeon' ? '' : 'none';
+  document.getElementById('label-type').textContent = mode === 'cave' ? 'Formation / Tunnel' : 'Room / Corridor';
+  ['res-type','res-size','res-exits','res-feature','res-encounter','res-atmo','res-twist'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.innerHTML = '—'; el.classList.add('empty'); }
+  });
+  const box = document.getElementById('room-combined');
+  box.className = 'combined-result empty';
+  box.textContent = 'Choose a mode and roll to generate your first area…';
 }
 
-// ── GENERATE FULL ROOM ──────────────────────────────────────
+// ─── SCOPE ────────────────────────────────────────────────────
+
+function updateScope() {
+  const sel = document.getElementById('scope-select').value;
+  const info    = document.getElementById('scope-info');
+  const counter = document.getElementById('room-counter');
+  const resetBtn = document.getElementById('btn-reset');
+  if (!sel) { scopeMax = null; roomCount = 0; info.textContent = ''; counter.style.display = 'none'; resetBtn.style.display = 'none'; return; }
+  const d = SCOPE_DATA[sel];
+  scopeMax  = d.min + Math.floor(Math.random() * (d.max - d.min + 1));
+  roomCount = 0;
+  info.textContent = d.desc + ` Target: ~${scopeMax} rooms.`;
+  counter.style.display  = '';
+  resetBtn.style.display = '';
+  document.getElementById('room-current').textContent = roomCount;
+  document.getElementById('room-max').textContent     = scopeMax;
+}
+
+function resetScope() {
+  document.getElementById('scope-select').value = '';
+  scopeMax = null; roomCount = 0;
+  document.getElementById('scope-info').textContent = '';
+  document.getElementById('room-counter').style.display  = 'none';
+  document.getElementById('btn-reset').style.display     = 'none';
+}
+
+// ─── ROLL HELPERS ─────────────────────────────────────────────
+
+function getRollType()     { const T = currentMode==='cave'?CAVE:DUNGEON; const r=roll(20); return {r, text:T.type[r], cx:isCrossover(T.type[r])}; }
+function getRollSize()     { const T = currentMode==='cave'?CAVE:DUNGEON; const r=roll(6);  return {r, text:T.size[r]}; }
+function getRollExits()    { const T = currentMode==='cave'?CAVE:DUNGEON; const r=roll(4);  return {r, text:T.exits[r]}; }
+function getRollFeature()  { const T = currentMode==='cave'?CAVE:DUNGEON; const r=roll(12); return {r, text:T.feature[r]}; }
+function getRollAtmo()     { const T = currentMode==='cave'?CAVE:DUNGEON; const r=roll(10); return {r, text:T.atmo[r]}; }
+function getRollEncounter(){ const T = currentMode==='cave'?CAVE:DUNGEON; const r=roll(6);
+  if (r===1){ const t=roll(6); return {r,t,text:`Encounter — ${T.encounterType[t]}`,hasEnc:true}; }
+  return {r,text:'No encounter',hasEnc:false}; }
+function getRollTwist()    { const c=roll(6); if(c===6){const r=roll(12);return{fires:true,c,r,text:TWISTS[r]};} return{fires:false,c}; }
+
+// ─── INDIVIDUAL ROLLS ─────────────────────────────────────────
+
+function rollSingle(which) {
+  if (which==='type')      { const x=getRollType();     const h=x.cx?`${rn(x.r)}<span style="color:var(--crossover-color)">${x.text}</span>`:`${rn(x.r)}${x.text}`; setRes('res-type',h,true); }
+  else if (which==='size') { const x=getRollSize();     setRes('res-size',    `${rn(x.r)}${x.text}`,true); }
+  else if (which==='exits'){ const x=getRollExits();    setRes('res-exits',   `${rn(x.r)}${x.text}`,true); }
+  else if (which==='feature'){const x=getRollFeature(); setRes('res-feature', `${rn(x.r)}${x.text}`,true); }
+  else if (which==='atmo') { const x=getRollAtmo();     setRes('res-atmo',    `${rn(x.r)}${x.text}`,true); }
+  else if (which==='encounter'){ const x=getRollEncounter(); const d=x.hasEnc?`${x.r}→${x.t}`:`${x.r}`; setRes('res-encounter',`${rn(d)}${x.text}`,true); }
+  else if (which==='twist'){ const x=getRollTwist();
+    if(x.fires){ setRes('res-twist',`<span class="roll-num">[✦${x.r}]</span>${x.text}`,true); }
+    else { setRes('res-twist',`${rn(x.c)}No twist`,true); } }
+}
+
+// ─── GENERATE ROOM ────────────────────────────────────────────
 
 function generateRoom() {
-  // Roll all tables
-  const typeR = roll(20);
-  const sizeR = roll(6);
-  const exitsR = roll(4);
-  const featR = roll(12);
-  const atmoR = roll(8);
-  const encR = roll(6);
-  let encText, encRollDisplay;
-  if (encR === 1) {
-    const encT = roll(6);
-    encText = `Encounter — ${TABLES.encounterType[encT]}`;
-    encRollDisplay = `${encR}→${encT}`;
-  } else {
-    encText = "No encounter";
-    encRollDisplay = `${encR}`;
-  }
-  const chanceR = roll(6);
-  let twistText = null, twistRoll = null;
-  if (chanceR === 6) {
-    twistRoll = roll(12);
-    twistText = TABLES.twist[twistRoll];
+  const type    = getRollType();
+  const size    = getRollSize();
+  const exits   = getRollExits();
+  const feature = getRollFeature();
+  const atmo    = getRollAtmo();
+  const enc     = getRollEncounter();
+  const twist   = getRollTwist();
+
+  if (currentMode==='dungeon' && scopeMax) {
+    roomCount++;
+    document.getElementById('room-current').textContent = roomCount;
   }
 
-  // Update individual displays too
-  setResult('res-type',     `<span class="roll-num">[${typeR}]</span>${TABLES.type[typeR]}`);
-  setResult('res-size',     `<span class="roll-num">[${sizeR}]</span>${TABLES.size[sizeR]}`);
-  setResult('res-exits',    `<span class="roll-num">[${exitsR}]</span>${TABLES.exits[exitsR]}`);
-  setResult('res-feature',  `<span class="roll-num">[${featR}]</span>${TABLES.feature[featR]}`);
-  setResult('res-encounter',`<span class="roll-num">[${encRollDisplay}]</span>${encText}`);
-  setResult('res-atmo',     `<span class="roll-num">[${atmoR}]</span>${TABLES.atmo[atmoR]}`);
-  if (twistText) {
-    setResult('res-twist', `<span class="roll-num">[✦${twistRoll}]</span>${twistText}`);
-  } else {
-    const el = document.getElementById('res-twist');
-    el.innerHTML = `<span class="roll-num">[${chanceR}]</span>No twist`;
-    el.classList.remove('empty');
-  }
+  // Update individual cards
+  const typeHtml = type.cx
+    ? `${rn(type.r)}<span style="color:var(--crossover-color)">${type.text}</span>`
+    : `${rn(type.r)}${type.text}`;
+  setRes('res-type',    typeHtml);
+  setRes('res-size',    `${rn(size.r)}${size.text}`);
+  setRes('res-exits',   `${rn(exits.r)}${exits.text}`);
+  setRes('res-feature', `${rn(feature.r)}${feature.text}`);
+  setRes('res-atmo',    `${rn(atmo.r)}${atmo.text}`);
+  const ed = enc.hasEnc?`${enc.r}→${enc.t}`:`${enc.r}`;
+  setRes('res-encounter',`${rn(ed)}${enc.text}`);
+  if (twist.fires) { setRes('res-twist',`<span class="roll-num">[✦${twist.r}]</span>${twist.text}`); }
+  else { setRes('res-twist',`${rn(twist.c)}No twist`); }
 
-  // Build combined display
+  // Build summary
   const box = document.getElementById('room-combined');
-  box.classList.remove('empty');
+  box.className = 'combined-result revealed';
 
-  let html = `
-    <div class="room-line revealed">
-      <span class="room-key">Type</span>
-      <span class="room-val"><span class="roll-num">[${typeR}]</span>${TABLES.type[typeR]}</span>
-    </div>
-    <div class="room-line revealed">
-      <span class="room-key">Size</span>
-      <span class="room-val"><span class="roll-num">[${sizeR}]</span>${TABLES.size[sizeR]}</span>
-    </div>
-    <div class="room-line revealed">
-      <span class="room-key">Exits</span>
-      <span class="room-val"><span class="roll-num">[${exitsR}]</span>${TABLES.exits[exitsR]}</span>
-    </div>
-    <div class="room-line revealed">
-      <span class="room-key">Feature</span>
-      <span class="room-val"><span class="roll-num">[${featR}]</span>${TABLES.feature[featR]}</span>
-    </div>
-    <div class="room-line revealed">
-      <span class="room-key">Encounter</span>
-      <span class="room-val"><span class="roll-num">[${encRollDisplay}]</span>${encText}</span>
-    </div>
-    <div class="room-line revealed">
-      <span class="room-key">Atmosphere</span>
-      <span class="room-val"><span class="roll-num">[${atmoR}]</span>${TABLES.atmo[atmoR]}</span>
-    </div>`;
+  const typeLineClass = type.cx ? 'room-line crossover-line' : 'room-line';
+  const typeKey = currentMode==='cave' ? 'Formation' : 'Room Type';
 
-  if (twistText) {
-    html += `
-    <div class="room-line twist-line revealed">
-      <span class="room-key">✦ Star Twist</span>
-      <span class="room-val"><span class="roll-num">[${twistRoll}]</span>${twistText}</span>
-    </div>`;
+  let scopeLine = '';
+  if (currentMode==='dungeon' && scopeMax) {
+    const pct = roomCount/scopeMax;
+    const feel = roomCount>=scopeMax ? ' — you have reached the heart' :
+                 pct>=0.75 ? ' — the end draws close' :
+                 pct>=0.45 ? ' — you are deep within' : '';
+    scopeLine = `<div class="room-line"><span class="room-key" style="color:var(--gold-dim)">Progress</span>
+      <span class="room-val" style="color:var(--gold-mid);font-style:normal;font-size:0.92rem;">Room ${roomCount} of ~${scopeMax}${feel}</span></div>`;
   }
 
-  box.innerHTML = html;
+  const twistLine = twist.fires ? `<div class="room-line twist-line">
+    <span class="room-key">✦ Twist</span>
+    <span class="room-val"><span class="roll-num">[${twist.r}]</span>${twist.text}</span></div>` : '';
+
+  box.innerHTML = `
+    ${scopeLine}
+    <div class="${typeLineClass}">
+      <span class="room-key">${typeKey}</span>
+      <span class="room-val">${typeHtml}</span>
+    </div>
+    <div class="room-line"><span class="room-key">Size</span>
+      <span class="room-val">${rn(size.r)}${size.text}</span></div>
+    <div class="room-line"><span class="room-key">Exits</span>
+      <span class="room-val">${rn(exits.r)}${exits.text}</span></div>
+    <div class="room-line"><span class="room-key">Feature</span>
+      <span class="room-val">${rn(feature.r)}${feature.text}</span></div>
+    <div class="room-line"><span class="room-key">Encounter</span>
+      <span class="room-val">${rn(ed)}${enc.text}</span></div>
+    <div class="room-line"><span class="room-key">Atmosphere</span>
+      <span class="room-val">${rn(atmo.r)}${atmo.text}</span></div>
+    ${twistLine}`;
 }
 
-// ── ORACLE ──────────────────────────────────────────────────
+// ─── ORACLE ───────────────────────────────────────────────────
 
 function rollOracle() {
   const r = roll(20);
-  const box = document.getElementById('oracle-result-box');
-  const ansEl = document.getElementById('oracle-answer');
-  const modEl = document.getElementById('oracle-modifier');
+  const box    = document.getElementById('oracle-result-box');
+  const ansEl  = document.getElementById('oracle-answer');
+  const modEl  = document.getElementById('oracle-modifier');
   const rollEl = document.getElementById('oracle-roll-display');
-
   box.style.display = 'block';
   rollEl.textContent = `Roll: ${r}`;
-
-  if (r === 10) {
-    ansEl.textContent = 'TWIST';
-    ansEl.className = 'oracle-answer twist';
-    modEl.textContent = 'Roll a Prompt.';
-  } else if (r <= 9) {
-    const isOdd = r % 2 !== 0;
-    ansEl.textContent = 'NO';
-    ansEl.className = 'oracle-answer no';
-    modEl.textContent = isOdd ? 'But… (add a complication)' : '';
+  if (r===10) {
+    ansEl.textContent = 'TWIST'; ansEl.className = 'oracle-answer twist'; modEl.textContent = 'Roll a Prompt.';
+  } else if (r<=9) {
+    ansEl.textContent = 'NO'; ansEl.className = 'oracle-answer no';
+    modEl.textContent = (r%2!==0) ? 'But… (add a complication)' : '';
   } else {
-    const isOdd = r % 2 !== 0;
-    ansEl.textContent = 'YES';
-    ansEl.className = 'oracle-answer yes';
-    modEl.textContent = isOdd ? 'But… (add a complication)' : '';
+    ansEl.textContent = 'YES'; ansEl.className = 'oracle-answer yes';
+    modEl.textContent = (r%2!==0) ? 'But… (add a complication)' : '';
   }
-
-  box.classList.remove('revealed');
-  void box.offsetWidth;
-  box.classList.add('revealed');
+  box.classList.remove('revealed'); void box.offsetWidth; box.classList.add('revealed');
 }
 
-// ── NAV ─────────────────────────────────────────────────────
+// ─── NAV ──────────────────────────────────────────────────────
 
-function showPanel(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  const panel = document.getElementById('panel-' + name);
-  if (panel) panel.classList.add('active');
-  event.currentTarget.classList.add('active');
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const p = document.getElementById('panel-'+name);
+  if (p) p.classList.add('active');
+  if (el) el.classList.add('active');
 }
 </script>
 </body>
