@@ -519,7 +519,7 @@
   <div id="panel-loot" class="panel">
     <div class="section-title">Loot</div>
 
-    <!-- Four search contexts — tap to switch -->
+    <!-- Four search contexts -->
     <div class="loot-context-toggle">
       <button class="loot-ctx-btn active" id="lctx-pockets" onclick="setLootCtx('pockets',this)">Pockets<br>/ Body</button>
       <button class="loot-ctx-btn"        id="lctx-stash"   onclick="setLootCtx('stash',this)">Stash<br>/ Office</button>
@@ -527,7 +527,7 @@
       <button class="loot-ctx-btn"        id="lctx-dungeon" onclick="setLootCtx('dungeon',this)">Dungeon<br>/ Crypt</button>
     </div>
 
-    <!-- Wealth toggle — only shown for Stash context -->
+    <!-- Wealth toggle — Stash only -->
     <div class="wealth-row" id="wealth-row">
       <div class="wealth-toggle">
         <button class="wealth-btn active" id="wbtn-poor" onclick="setWealth('poor',this)">Poor / Desperate</button>
@@ -537,8 +537,10 @@
 
     <div class="info-box" id="loot-info-box" style="font-size:0.88rem; margin-bottom:1.1rem;"></div>
 
-    <!-- Loot table cards — rendered dynamically -->
-    <div id="loot-tables"></div>
+    <button class="btn-generate" onclick="searchLoot()">⚄ &nbsp; Search</button>
+
+    <!-- Search result — full item list -->
+    <div id="loot-result" class="combined-result empty">Choose a context and search…</div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════
@@ -1249,223 +1251,350 @@ function generateRoom() {
 //
 //  LOOT TABLE DATA
 //
-//  Four contexts, each with its own tables.
 //  All items conform to ShadowDark Core Rules.
-//  No invented items, spells, or equipment not in the core book.
+//  No invented items, potions, or equipment not in the core book.
 //
-//  To edit: find the context key below and change the string entries.
-//  To add entries, add strings AND update the roll(N) in rollLootTable().
+//  Structure: each context has weighted CATEGORIES (common → rare)
+//  and specific item tables per category.
+//
+//  To edit: find the context and category below, change the strings.
+//  To add items: add to the array. Weighting is controlled by
+//  LOOT_WEIGHTS — lower numbers = more common.
 //
 // ════════════════════════════════════════════════════════════════
 
-// ── POCKETS / BODY ───────────────────────────────────────────────
-// Quick search of a defeated individual. Fast and light.
-// d6 coin result, d8 gear result, d6 oddity result.
-const LOOT_POCKETS = {
-  // What coin, if any (d6 — 1-2 nothing, 3-6 something)
-  coin: [
-    null,
-    "Nothing — empty pockets",
-    "Nothing — they spent it or never had it",
-    "A few coppers — 1d6 cp",
-    "Some silver — 1d6 sp",
-    "Mixed coin — 1d4 sp and 1d6 cp",
-    "Decent purse — 1d6 sp"
+// ── CATEGORY WEIGHTS ─────────────────────────────────────────────
+// Each context defines which categories exist and how likely they are.
+// Weight is relative frequency. E.g. {cat:'coin', w:4} is twice as
+// likely as {cat:'valuable', w:2}.
+const LOOT_WEIGHTS = {
+  pockets: [
+    { cat:'coin',     w:5 },
+    { cat:'gear',     w:4 },
+    { cat:'oddity',   w:1 }
   ],
-  // Personal gear found on the body (d8)
-  gear: [
-    null,
-    "Nothing useful",
-    "Flint and steel",
-    "Short length of rope",
-    "Rations — 1d3 days worth",
-    "Torch or two",
-    "Small knife (counts as dagger)",
-    "Waterskin, half full",
-    "Miscellaneous tools — roll to determine if relevant"
+  stash_poor: [
+    { cat:'coin',     w:4 },
+    { cat:'gear',     w:4 },
+    { cat:'document', w:2 }
   ],
-  // Oddity or personal item (d6 — 1-3 nothing, 4-6 something)
-  oddity: [
-    null,
-    "Nothing personal of note",
-    "Nothing personal of note",
-    "Nothing personal of note",
-    "A scrap of paper — note, map fragment, or list",
-    "A small token — religious, personal, or identifying",
-    "Something out of place — too fine, too strange, or too relevant"
+  stash_rich: [
+    { cat:'coin',     w:3 },
+    { cat:'gear',     w:3 },
+    { cat:'valuable', w:2 },
+    { cat:'document', w:2 }
+  ],
+  cave: [
+    { cat:'gear',     w:4 },
+    { cat:'coin',     w:3 },
+    { cat:'creature', w:2 },
+    { cat:'unusual',  w:1 }
+  ],
+  dungeon: [
+    { cat:'coin',     w:4 },
+    { cat:'valuable', w:3 },
+    { cat:'gear',     w:2 },
+    { cat:'magic',    w:1 }
   ]
 };
 
-// ── STASH / OFFICE ───────────────────────────────────────────────
-// Searching a hideout, desk, cache, or room.
-// Two wealth tiers: poor (desperate gang / abandoned) vs rich (successful operation).
-const LOOT_STASH = {
-  poor: {
-    // d6 coin result
+// ── ITEM TABLES BY CONTEXT AND CATEGORY ──────────────────────────
+// Add or edit entries freely within each array.
+const LOOT_ITEMS = {
+
+  // ── POCKETS / BODY ──────────────────────────────────────────────
+  // Quick search of a defeated individual.
+  pockets: {
     coin: [
-      null,
-      "Nothing — cleaned out already",
-      "Scattered coppers — 2d6 cp",
+      "A few coppers — 1d6 cp",
       "Small purse — 1d6 sp",
-      "Coin pouch — 2d6 sp",
-      "Hidden stash — 1d6 sp and 2d6 cp",
-      "Modest savings — 1d10 sp"
+      "Mixed coin — 1d4 sp and 1d6 cp",
+      "Single silver coin — 1 sp",
+      "Nothing — empty pockets",
+      "Coin sewn into lining — 1d4 sp"
     ],
-    // d8 supplies and equipment
     gear: [
-      null,
-      "Basic rations — 1d6 days",
-      "Rope, 50 ft",
-      "Torches — 1d6",
-      "Lantern, no oil",
-      "Lockpicks, worn",
-      "Crowbar",
-      "Mixed tools — hammer, spikes, etc.",
-      "Bedroll and blanket"
+      "Flint and steel",
+      "Short length of rope",
+      "Torch",
+      "Rations — 1 day",
+      "Small knife (dagger)",
+      "Waterskin, half full",
+      "Bandage or strip of cloth",
+      "Candle stub"
     ],
-    // d6 documents or valuables
-    valuables: [
-      null,
-      "Nothing of value",
-      "Nothing of value",
-      "Wanted poster — possibly relevant",
-      "Partial map or rough directions",
-      "Ledger with names and debts",
-      "Small personal cache — jewelry worth 1d6 sp"
+    oddity: [
+      "A scrap of paper — note, list, or partial map",
+      "Small religious token — worn smooth",
+      "A key — unknown lock",
+      "Folded letter, sealed",
+      "Something too fine for this person — stolen or gifted",
+      "A crude drawing or map fragment"
     ]
   },
-  rich: {
-    // d6 coin result
+
+  // ── STASH / OFFICE — POOR ───────────────────────────────────────
+  // Desperate gang, abandoned hideout, struggling operation.
+  stash_poor: {
     coin: [
-      null,
+      "Scattered coppers — 2d6 cp",
+      "Small purse — 1d6 sp",
+      "Hidden pouch — 2d6 sp",
+      "Coin box, nearly empty — 1d4 sp",
+      "Nothing — cleaned out",
+      "Trade goods — worth 1d6 sp to the right buyer"
+    ],
+    gear: [
+      "Rope, 50 ft",
+      "Torches — 1d6",
+      "Rations — 1d4 days",
+      "Crowbar",
+      "Lantern, no oil",
+      "Lockpicks, worn and incomplete",
+      "Bedroll",
+      "Hammer and spikes"
+    ],
+    document: [
+      "Wanted poster — possibly relevant",
+      "Partial map or rough directions",
+      "List of names — debtors or targets",
+      "Note in crude handwriting — cryptic",
+      "Receipt or ledger page",
+      "Nothing useful — old scraps"
+    ]
+  },
+
+  // ── STASH / OFFICE — RICH ───────────────────────────────────────
+  // Successful operation, active leadership, flush with coin.
+  stash_rich: {
+    coin: [
       "Coin box — 2d6 sp",
       "Strongbox — 1d6 gp and 2d6 sp",
       "Hidden drawer — 2d6 gp",
-      "Lockbox — 1d4 gp and trade goods worth 1d6 gp",
-      "Operational funds — 1d10 gp",
-      "Major stash — 2d10 gp, possibly more elsewhere"
+      "Operational fund pouch — 1d10 gp",
+      "Mixed coin cache — 1d4 gp and 1d6 sp",
+      "Trade invoice — redeemable for 1d6 gp at named location"
     ],
-    // d8 quality equipment
     gear: [
-      null,
       "Quality rope and tools",
       "Oil flasks — 1d6",
-      "Healing potion (1 HP per die, heals 1d4 HP)",
-      "Fine lockpicks — bonus to attempts",
+      "Fine lockpicks",
       "Crossbow bolts — 2d6",
-      "Lantern and oil for 6 hours",
+      "Lantern and full oil flask",
       "Manacles with key",
       "Rations — 1d6 days, preserved"
     ],
-    // d6 documents and valuables
-    valuables: [
-      null,
-      "Contracts or ledger — names, payments, operations",
+    valuable: [
       "Jewelry — rings or chains worth 2d6 sp",
-      "Sealed letter — addressed to someone important",
       "Small gemstone — worth 1d6 gp",
-      "Quality weapon — one item from SD weapon list",
-      "Deed, writ, or official document — significant"
+      "Silver plate or cup — worth 2d6 sp",
+      "Fine weapon from SD weapon list",
+      "Ivory or carved token — worth 1d6 gp",
+      "Quality clothing or cloak — worth 1d6 sp"
+    ],
+    document: [
+      "Contracts — names, payments, ongoing operations",
+      "Sealed letter addressed to someone important",
+      "Ledger with coded entries — ongoing deals",
+      "Deed, writ, or official document",
+      "Map with marked locations",
+      "Written orders — recent, specific, dangerous"
+    ]
+  },
+
+  // ── CAVE / WILDERNESS ────────────────────────────────────────────
+  // Creature lair, old camp, natural cache, hollow, rock shelf.
+  cave: {
+    gear: [
+      "Rope and pitons — left by a previous explorer",
+      "Hunting supplies — snares, skinning knife",
+      "Torches — 1d4 remaining",
+      "Waterskin and flint",
+      "Bedroll, weathered but usable",
+      "Old rations — barely edible, 1d4 days worth",
+      "Abandoned pack with mixed contents",
+      "Canteen and fire kit"
+    ],
+    coin: [
+      "Scattered coin — 1d6 sp, filthy and old",
+      "Creature-collected shinies — 1d6 sp worth",
+      "Buried pouch — 2d6 sp",
+      "Previous explorer purse — 1d6 sp and 1d4 gp",
+      "Nothing — bare stone",
+      "Old foreign coin — worth 1d6 sp as curiosity"
+    ],
+    creature: [
+      "Claws or teeth — worth 1d6 sp to the right buyer",
+      "Pelt or hide — worth 1d6 sp if intact",
+      "Venom sac — worth 1d6 gp if handled carefully",
+      "Bone — carved or useful for crafting",
+      "Feathers or scales — worth 1d4 sp",
+      "Nothing salvageable from the creature"
+    ],
+    unusual: [
+      "Carved token — someone was here deliberately",
+      "Bones of a previous adventurer with usable gear",
+      "Natural gem or crystal — worth 1d6 gp rough",
+      "Something that should not be here — too fine, too recent",
+      "Old campsite with buried cache underneath",
+      "A mark or sign — recognisable to the right person"
+    ]
+  },
+
+  // ── DUNGEON / CRYPT ──────────────────────────────────────────────
+  // Rooms, sarcophagi, niches, hidden compartments, altars.
+  // All items strictly SD Core Rules canon.
+  // Magic is rare and meaningful — weighted accordingly.
+  dungeon: {
+    coin: [
+      "Old coin — 1d6 sp, tarnished",
+      "Mixed coin — 2d6 sp and 1d6 cp",
+      "Coin cache — 1d6 gp and 1d6 sp",
+      "Offering bowl — 2d6 sp in ancient coin",
+      "Hidden compartment — 1d4 gp",
+      "Nothing — stripped long ago",
+      "Burial coin — single gp, placed deliberately"
+    ],
+    valuable: [
+      "Tarnished jewelry — worth 1d6 sp",
+      "Fine jewelry — worth 1d6 gp",
+      "Uncut gem — worth 1d4 gp",
+      "Carved idol — worth 1d6 gp to collector or temple",
+      "Silver plate or vessel — worth 2d6 sp",
+      "Engraved weapon (decorative, functional) — SD weapon list",
+      "Small art object — worth 1d6 gp",
+      "Ceremonial armor piece — worth 1d6 sp as scrap or 1d6 gp intact"
+    ],
+    gear: [
+      "Corroded weapon — functional, SD weapon list",
+      "Old armor — leather or chain, needs repair",
+      "Rope and adventurer supplies",
+      "Ritual candles and chalk — worth 1d6 sp",
+      "Quality tool — crowbar, lockpicks, or similar",
+      "Empty flask or vial — clean and sealed"
+    ],
+    magic: [
+      "Healing potion — restores 1d4 HP (SD core item)",
+      "Spell scroll — one random 1st-level spell",
+      "Nothing magical — the aura was residue only",
+      "Nothing magical",
+      "Nothing magical",
+      "Unusual item — GM ruling or consult SD magic item tables"
     ]
   }
 };
 
-// ── CAVE / WILDERNESS ─────────────────────────────────────────────
-// Searching a natural area: creature lair, cache, old camp, hollow tree.
-const LOOT_CAVE = {
-  // d6 — is there even anything here?
-  presence: [
-    null,
-    "Nothing — bare rock and old bones",
-    "Nothing — stripped clean long ago",
-    "Nothing of value",
-    "Something small — roll gear",
-    "A cache of some kind — roll gear and coin",
-    "A proper hoard — roll all three"
-  ],
-  // d8 — what kind of gear or supply
-  gear: [
-    null,
-    "Old rations — spoiled or barely edible",
-    "Abandoned equipment — roll condition",
-    "Rope and pitons — left by a previous explorer",
-    "Hunting supplies — snares, skinning knife",
-    "Torches — 1d4 remaining",
-    "Waterskin and flint",
-    "Creature materials — claws, hide, teeth — value 1d6 sp to the right buyer",
-    "Preserved cache — rations 1d6 days, wrapped carefully"
-  ],
-  // d6 — coin or tradeable goods
-  coin: [
-    null,
-    "No coin",
-    "No coin",
-    "Scattered coin — 1d6 sp, filthy and old",
-    "Creature's collected shiny objects — 1d6 sp worth",
-    "Buried pouch — 2d6 sp",
-    "Previous explorer's purse — 1d6 sp and 1d4 gp"
-  ],
-  // d6 — something unusual
-  unusual: [
-    null,
-    "Nothing unusual",
-    "Nothing unusual",
-    "A carved token or marker — someone was here deliberately",
-    "Bones of a previous adventurer — with gear, roll once on gear",
-    "A natural gem or mineral — worth 1d6 gp rough",
-    "Something that should not be here — too fine, too recent, too strange"
-  ]
+// ── ITEM COUNT ROLLS BY CONTEXT ───────────────────────────────────
+// Returns number of items found. Cave and dungeon can return 0.
+function rollItemCount(ctx) {
+  if (ctx === 'pockets')                        return Math.ceil(Math.random() * 3);       // 1d3
+  if (ctx === 'stash_poor')                     return Math.ceil(Math.random() * 4);       // 1d4
+  if (ctx === 'stash_rich')                     return Math.ceil(Math.random() * 6);       // 1d6
+  if (ctx === 'cave' || ctx === 'dungeon')      return Math.max(0, Math.ceil(Math.random() * 4) - 1); // 1d4-1
+  return 1;
+}
+
+// ── WEIGHTED CATEGORY PICKER ──────────────────────────────────────
+function pickCategory(ctx) {
+  const weights = LOOT_WEIGHTS[ctx];
+  const total   = weights.reduce((s, w) => s + w.w, 0);
+  let r = Math.random() * total;
+  for (const w of weights) { r -= w.w; if (r <= 0) return w.cat; }
+  return weights[weights.length - 1].cat;
+}
+
+// ── ROLL ONE ITEM ─────────────────────────────────────────────────
+function rollOneItem(ctx) {
+  const cat   = pickCategory(ctx);
+  const table = LOOT_ITEMS[ctx][cat];
+  if (!table || table.length === 0) return { cat: 'coin', text: 'Nothing of note' };
+  const text  = table[Math.floor(Math.random() * table.length)];
+  return { cat, text };
+}
+
+// ── REROLL ONE LINE ───────────────────────────────────────────────
+function rerollLootLine(idx, ctx) {
+  const item = rollOneItem(ctx);
+  const row  = document.getElementById('loot-line-' + idx);
+  if (!row) return;
+  row.querySelector('.loot-line-text').textContent = item.text;
+  row.querySelector('.loot-line-cat').textContent  = item.cat;
+}
+
+// ── MAIN SEARCH FUNCTION ──────────────────────────────────────────
+function searchLoot() {
+  const ctx    = lootCtx === 'stash' ? ('stash_' + lootWealth) : lootCtx;
+  const count  = rollItemCount(ctx);
+  const box    = document.getElementById('loot-result');
+
+  const ctxLabel = {
+    pockets:    'Pockets / Body',
+    stash_poor: 'Stash — Poor',
+    stash_rich: 'Stash — Successful',
+    cave:       'Cave / Wilderness',
+    dungeon:    'Dungeon / Crypt'
+  }[ctx] || ctx;
+
+  if (count === 0) {
+    box.className = 'combined-result revealed';
+    box.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--ink-faint);font-style:italic;">
+      <span style="font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase;">${ctxLabel}</span><br><br>
+      Nothing here. The search turns up empty.
+    </div>`;
+    return;
+  }
+
+  const items = [];
+  for (let i = 0; i < count; i++) { items.push(rollOneItem(ctx)); }
+
+  const rows = items.map((item, i) => `
+    <div class="room-line" id="loot-line-${i}">
+      <span class="room-key loot-line-cat">${item.cat}</span>
+      <span class="room-val loot-line-text" style="flex:1;">${item.text}</span>
+      <button class="btn-roll" style="margin-left:0.5rem;flex-shrink:0;" onclick="rerollLootLine(${i},'${ctx}')">↺</button>
+    </div>`).join('');
+
+  box.className = 'combined-result revealed';
+  box.innerHTML = `
+    <div class="room-line" style="margin-bottom:0.2rem;">
+      <span class="room-key" style="color:var(--gold-dim);">Context</span>
+      <span class="room-val" style="color:var(--gold-mid);font-style:normal;font-size:0.92rem;">${ctxLabel} — ${count} item${count > 1 ? 's' : ''} found</span>
+    </div>
+    ${rows}`;
+}
+
+// ── LOOT STATE ────────────────────────────────────────────────────
+let lootCtx    = 'pockets';
+let lootWealth = 'poor';
+
+const LOOT_INFO = {
+  pockets: 'Quick search of a defeated individual. Always finds something. (1d3 items)',
+  stash:   'Searching a hideout, desk, cache, or known stash. Toggle wealth tier above.',
+  cave:    'Natural setting — creature lair, old camp, rock cache. May be empty. (1d4-1)',
+  dungeon: 'Constructed space — room, sarcophagus, niche, compartment. May be empty. (1d4-1)'
 };
 
-// ── DUNGEON / CRYPT ───────────────────────────────────────────────
-// Searching constructed spaces: rooms, sarcophagi, niches, hidden compartments.
-// All items strictly SD Core Rules canon.
-const LOOT_DUNGEON = {
-  // d6 — coin and mundane valuables
-  coin: [
-    null,
-    "No coin — taken long ago",
-    "Old coin — 1d6 sp, tarnished",
-    "Mixed coin — 2d6 sp and 1d6 cp",
-    "Coin cache — 1d6 gp and 1d6 sp",
-    "Offering bowl — 2d6 sp in old coin",
-    "Hidden compartment — 1d4 gp"
-  ],
-  // d8 — jewelry and trade goods
-  valuables: [
-    null,
-    "Nothing recoverable",
-    "Tarnished jewelry — worth 1d6 sp",
-    "Fine jewelry — worth 1d6 gp",
-    "Gem — worth 1d4 gp, uncut",
-    "Carved idol — religious significance, worth 1d6 gp",
-    "Silver plate or vessel — worth 2d6 sp",
-    "Engraved weapon — decorative but functional, SD weapon list",
-    "Small art object — worth 1d6 gp to the right buyer"
-  ],
-  // d6 — scrolls and potions (rare — SD canon only)
-  // Healing potion is the core SD potion. Scrolls hold one spell.
-  magic: [
-    null,
-    "Nothing magical",
-    "Nothing magical",
-    "Nothing magical",
-    "Healing potion — restores 1d4 HP (SD core item)",
-    "Spell scroll — holds one random 1st-level spell",
-    "Unusual item — consult SD magic item tables or GM ruling"
-  ],
-  // d6 — equipment left behind
-  gear: [
-    null,
-    "Nothing usable",
-    "Corroded but functional weapon — SD weapon list",
-    "Old armor — leather or chain, functional if repaired",
-    "Adventurer's gear — rope, spikes, etc.",
-    "Ritual equipment — candles, chalk, incense — value 1d6 sp",
-    "Quality tool — lockpicks, crowbar, or similar"
-  ]
-};
+function setLootCtx(ctx, el) {
+  lootCtx = ctx;
+  document.querySelectorAll('.loot-ctx-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('wealth-row').classList.toggle('visible', ctx === 'stash');
+  document.getElementById('loot-info-box').textContent = LOOT_INFO[ctx];
+  // Reset result box
+  const box = document.getElementById('loot-result');
+  box.className = 'combined-result empty';
+  box.textContent = 'Choose a context and search…';
+}
 
+function setWealth(w, el) {
+  lootWealth = w;
+  document.querySelectorAll('.wealth-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function initLoot() {
+  document.getElementById('loot-info-box').textContent = LOOT_INFO['pockets'];
+}
 
 // ════════════════════════════════════════════════════════════════
 //
@@ -1599,15 +1728,49 @@ const NPC_TABLES = {
     "Exceptional — rare find; has abilities you currently lack"
   ],
 
-  // d6 — Name flavor origin (for on-the-fly naming feel)
-  nameFlavor: [
-    null,
-    "Common — plain, forgettable, deliberately so",
-    "Regional — marks them as from somewhere specific",
-    "Occupational — a name that came from what they do",
-    "Inherited — family name carries weight, good or bad",
-    "Nickname — what everyone calls them; real name forgotten",
-    "Unusual — stands out; they either own it or resent it"
+};
+
+// ── NPC NAMES BY ANCESTRY ─────────────────────────────────────────
+// Drawn from and expanded from SD Core Rules p.38 conventions.
+// The quick generator picks from the list matching the rolled ancestry.
+// Add names freely — longer lists reduce duplicate draws.
+const NPC_NAMES = {
+  Human: [
+    "Aldric","Bram","Cass","Davan","Edric","Fenn","Garet","Holt",
+    "Idris","Joran","Kael","Lorn","Maren","Nessa","Orin","Petra",
+    "Quinn","Rook","Sable","Tarn","Ursa","Vance","Wren","Xan",
+    "Yael","Zora","Beric","Calla","Dace","Elda","Finn","Gale",
+    "Hara","Isen","Joss","Kira","Leif","Mora","Niles","Odra"
+  ],
+  Elf: [
+    "Aelindra","Caladwen","Elowyn","Faelin","Galadris","Ithiel",
+    "Laeriel","Mireille","Naevys","Olindra","Quilara","Raevin",
+    "Sylindra","Thalion","Uriviel","Valanthe","Wynleth","Xilvar",
+    "Yravel","Zylphia","Aeren","Beriel","Corin","Daeris","Eravel",
+    "Faeron","Gaeriel","Haelis","Inavel","Jaeren"
+  ],
+  Dwarf: [
+    "Aldun","Bofra","Dolgrin","Eberk","Fargrim","Gardain","Harbek",
+    "Ildrak","Jodok","Kildrak","Lorm","Mordak","Nura","Orsik",
+    "Poldak","Rurik","Sholdrak","Tordak","Ulfgar","Vondal","Wulfric",
+    "Belra","Dagna","Eldra","Hilda","Ingra","Marta","Sigra","Tordis"
+  ],
+  Halfling: [
+    "Andry","Bree","Cade","Dorro","Elias","Fenwick","Garret","Hob",
+    "Ilsa","Jasper","Kes","Lilo","Merric","Nessa","Oswin","Pip",
+    "Quin","Roswyn","Sadie","Tobias","Una","Vilo","Willa","Xim",
+    "Yanna","Zeb","Bingo","Corwin","Delwyn","Emry"
+  ],
+  "Half-orc": [
+    "Argath","Brugha","Crusk","Drolg","Ekrag","Ferga","Grond","Hurga",
+    "Ikrath","Jorga","Krag","Lurga","Morda","Narsk","Olgra","Prusk",
+    "Rorgha","Skrag","Thorda","Urgha","Vrak","Wrusk","Yorgha","Zarka",
+    "Barka","Droga","Golga","Holga","Irga","Jorka"
+  ],
+  Goblin: [
+    "Bex","Drix","Flix","Grub","Hix","Jick","Krix","Lox","Mib",
+    "Nix","Pex","Quib","Rax","Snik","Tix","Ubb","Vrix","Wix",
+    "Xib","Yax","Zex","Brik","Dob","Frix","Gib","Hob","Jax","Kib","Lrix"
   ]
 };
 
@@ -1632,73 +1795,19 @@ function setLootCtx(ctx, el) {
   el.classList.add('active');
   document.getElementById('wealth-row').classList.toggle('visible', ctx === 'stash');
   document.getElementById('loot-info-box').textContent = LOOT_INFO[ctx];
-  renderLootTables();
+  const box = document.getElementById('loot-result');
+  box.className = 'combined-result empty';
+  box.textContent = 'Choose a context and search…';
 }
 
 function setWealth(w, el) {
   lootWealth = w;
   document.querySelectorAll('.wealth-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  renderLootTables();
 }
 
-// Build the loot table cards for the current context
-function renderLootTables() {
-  const container = document.getElementById('loot-tables');
-  let tables = [];
-
-  if (lootCtx === 'pockets') {
-    tables = [
-      { id: 'loot-coin',    label: 'Coin',    die: 'd6',  key: 'coin',   data: LOOT_POCKETS.coin },
-      { id: 'loot-gear',    label: 'Gear',    die: 'd8',  key: 'gear',   data: LOOT_POCKETS.gear },
-      { id: 'loot-oddity',  label: 'Oddity',  die: 'd6',  key: 'oddity', data: LOOT_POCKETS.oddity }
-    ];
-  } else if (lootCtx === 'stash') {
-    const src = LOOT_STASH[lootWealth];
-    tables = [
-      { id: 'loot-coin',      label: 'Coin',       die: 'd6', key: 'coin',      data: src.coin },
-      { id: 'loot-gear',      label: 'Gear',        die: 'd8', key: 'gear',      data: src.gear },
-      { id: 'loot-valuables', label: 'Documents & Valuables', die: 'd6', key: 'valuables', data: src.valuables }
-    ];
-  } else if (lootCtx === 'cave') {
-    tables = [
-      { id: 'loot-presence', label: 'Anything Here?', die: 'd6', key: 'presence', data: LOOT_CAVE.presence },
-      { id: 'loot-gear',     label: 'Gear / Supply',  die: 'd8', key: 'gear',     data: LOOT_CAVE.gear },
-      { id: 'loot-coin',     label: 'Coin / Trade',   die: 'd6', key: 'coin',     data: LOOT_CAVE.coin },
-      { id: 'loot-unusual',  label: 'Unusual',        die: 'd6', key: 'unusual',  data: LOOT_CAVE.unusual }
-    ];
-  } else if (lootCtx === 'dungeon') {
-    tables = [
-      { id: 'loot-coin',      label: 'Coin & Valuables', die: 'd6', key: 'coin',      data: LOOT_DUNGEON.coin },
-      { id: 'loot-valuables', label: 'Objects & Jewelry', die: 'd8', key: 'valuables', data: LOOT_DUNGEON.valuables },
-      { id: 'loot-magic',     label: 'Magic (Rare)',      die: 'd6', key: 'magic',     data: LOOT_DUNGEON.magic },
-      { id: 'loot-gear',      label: 'Equipment',         die: 'd6', key: 'gear',      data: LOOT_DUNGEON.gear }
-    ];
-  }
-
-  container.innerHTML = tables.map(t => `
-    <div class="loot-card">
-      <div class="loot-card-header">
-        <span class="table-label">${t.label}</span>
-        <span class="die-badge">${t.die}</span>
-      </div>
-      <div class="loot-result-row">
-        <div class="result-display empty" id="${t.id}">—</div>
-        <button class="btn-roll" onclick="rollLootTable('${t.id}',${JSON.stringify(t.data)})">Roll</button>
-      </div>
-    </div>`).join('');
-}
-
-function rollLootTable(id, data) {
-  const n = data.length - 1; // data[0] is null
-  const r = roll(n);
-  setRes(id, `${rn(r)}${data[r]}`, true);
-}
-
-// Initialise loot panel on load
 function initLoot() {
   document.getElementById('loot-info-box').textContent = LOOT_INFO['pockets'];
-  renderLootTables();
 }
 
 
@@ -1724,19 +1833,22 @@ function rollNPCSingle(which) {
 }
 
 function generateNPC() {
-  const ancestry   = NPC_TABLES.ancestry[roll(10)];
-  const occ        = NPC_TABLES.occupation[roll(20)];
-  const disp       = NPC_TABLES.disposition[roll(8)];
-  const nameFlav   = NPC_TABLES.nameFlavor[roll(6)];
+  const ancestry = NPC_TABLES.ancestry[roll(10)];
+  const occ      = NPC_TABLES.occupation[roll(20)];
+  const disp     = NPC_TABLES.disposition[roll(8)];
+
+  // Pick a name from the ancestry-specific list
+  const nameList = NPC_NAMES[ancestry] || NPC_NAMES['Human'];
+  const name     = nameList[Math.floor(Math.random() * nameList.length)];
 
   const box = document.getElementById('npc-quick-result');
   box.style.display = 'block';
   box.className = 'npc-generate-result revealed';
   box.innerHTML = `
-    <div class="room-line"><span class="room-key">Ancestry</span> <span class="room-val">${ancestry}</span></div>
+    <div class="room-line"><span class="room-key">Name</span>       <span class="room-val" style="font-family:'Cinzel',serif;font-size:1.1rem;font-style:normal;color:var(--parchment-warm);">${name}</span></div>
+    <div class="room-line"><span class="room-key">Ancestry</span>   <span class="room-val">${ancestry}</span></div>
     <div class="room-line"><span class="room-key">Occupation</span> <span class="room-val">${occ}</span></div>
-    <div class="room-line"><span class="room-key">Disposition</span> <span class="room-val">${disp}</span></div>
-    <div class="room-line"><span class="room-key">Name feel</span> <span class="room-val">${nameFlav}</span></div>`;
+    <div class="room-line"><span class="room-key">Disposition</span><span class="room-val">${disp}</span></div>`;
 }
 
 // ════════════════════════════════════════════════════════════════
