@@ -6,329 +6,194 @@
 <title>Seraph's Oracle</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --stone-deepest: #0d0b09;
-    --stone-dark:    #1a1612;
-    --stone-mid:     #252018;
-    --stone-surface: #2e2820;
-    --stone-raised:  #3a3028;
-    --stone-border:  #4a3e30;
-    --stone-rim:     #6a5840;
-    --ink-faint:     #9a8a70;
-    --ink-mid:       #c0a882;
-    --ink-bright:    #ddc8a0;
-    --parchment:     #eeddb8;
-    --parchment-warm:#f5e8cc;
-    --ember:         #c8622a;
-    --ember-bright:  #e07840;
-    --gold-dim:      #8a6a30;
-    --gold-mid:      #b08840;
-    --gold-bright:   #d4a850;
-    --result-bg:     #181410;
-    --result-border: #5a4a32;
-    --result-text:   #f0e0c0;
-    --crossover-color: #7ab8d4;
-    --prompt-color:  #a8c890;
-  }
+:root {
+  --stone-deepest: #0d0b09;
+  --stone-dark:    #1a1612;
+  --stone-mid:     #252018;
+  --stone-surface: #2e2820;
+  --stone-raised:  #3a3028;
+  --stone-border:  #4a3e30;
+  --stone-rim:     #6a5840;
+  --ink-faint:     #9a8a70;
+  --ink-mid:       #c0a882;
+  --ink-bright:    #ddc8a0;
+  --parchment:     #eeddb8;
+  --parchment-warm:#f5e8cc;
+  --ember:         #c8622a;
+  --ember-bright:  #e07840;
+  --gold-dim:      #8a6a30;
+  --gold-mid:      #b08840;
+  --gold-bright:   #d4a850;
+  --result-bg:     #181410;
+  --result-border: #5a4a32;
+  --result-text:   #f0e0c0;
+  --crossover:     #7ab8d4;
+  --prompt-color:  #a8c890;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--stone-deepest);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(80,60,30,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(60,40,20,0.06) 0%, transparent 50%);
+  color: var(--ink-bright);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* HEADER */
+header {
+  text-align: center;
+  padding: 2rem 1rem 1.2rem;
+  border-bottom: 1px solid var(--stone-border);
+  background: linear-gradient(180deg, rgba(30,24,14,0.98) 0%, rgba(20,16,10,0.85) 100%);
+  position: relative;
+}
+header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold-mid), var(--gold-dim), transparent);
+}
+.header-rune { font-size: 0.65rem; letter-spacing: 0.45em; color: var(--ink-faint); text-transform: uppercase; margin-bottom: 0.4rem; }
+h1 { font-family: 'Cinzel', serif; font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 700; color: var(--parchment-warm); letter-spacing: 0.08em; text-shadow: 0 0 30px rgba(200,120,40,0.3), 0 2px 4px rgba(0,0,0,0.9); }
+.header-sub { font-style: italic; color: var(--ink-faint); font-size: 0.95rem; margin-top: 0.25rem; }
 
-  body {
-    background-color: var(--stone-deepest);
-    background-image:
-      radial-gradient(ellipse at 20% 20%, rgba(80,60,30,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 80%, rgba(60,40,20,0.06) 0%, transparent 50%);
-    color: var(--ink-bright);
-    font-family: 'Crimson Text', Georgia, serif;
-    font-size: 19px;
-    line-height: 1.55;
-    min-height: 100vh;
-  }
+/* NAV */
+nav { display: flex; justify-content: center; flex-wrap: wrap; background: var(--stone-dark); border-bottom: 1px solid var(--stone-border); padding: 0 0.3rem; }
+.tab { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.8rem 0.9rem; cursor: pointer; color: var(--ink-faint); border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; user-select: none; white-space: nowrap; }
+.tab:hover { color: var(--ink-bright); }
+.tab.active { color: var(--gold-mid); border-bottom-color: var(--ember); }
+.tab.stub { opacity: 0.4; cursor: default; }
 
-  /* ── HEADER ── */
-  header {
-    text-align: center;
-    padding: 2rem 1rem 1.2rem;
-    border-bottom: 1px solid var(--stone-border);
-    background: linear-gradient(180deg, rgba(30,24,14,0.98) 0%, rgba(20,16,10,0.85) 100%);
-    position: relative;
-  }
-  header::after {
-    content: '';
-    position: absolute;
-    bottom: -1px; left: 8%; right: 8%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold-mid), var(--gold-dim), transparent);
-  }
-  .header-rune {
-    font-size: 0.65rem;
-    letter-spacing: 0.45em;
-    color: var(--ink-faint);
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
-  }
-  h1 {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(1.7rem, 6vw, 2.6rem);
-    font-weight: 700;
-    color: var(--parchment-warm);
-    letter-spacing: 0.08em;
-    text-shadow: 0 0 30px rgba(200,120,40,0.3), 0 2px 4px rgba(0,0,0,0.9);
-  }
-  .header-sub { font-style: italic; color: var(--ink-faint); font-size: 0.95rem; margin-top: 0.25rem; }
+/* LAYOUT */
+main { max-width: 820px; margin: 0 auto; padding: 1.6rem 1rem 3rem; }
+.panel { display: none; }
+.panel.active { display: block; }
 
-  /* ── NAV ── */
-  nav {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    background: var(--stone-dark);
-    border-bottom: 1px solid var(--stone-border);
-    padding: 0 0.3rem;
-  }
-  .tab {
-    font-family: 'Cinzel', serif;
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.8rem 0.9rem;
-    cursor: pointer;
-    color: var(--ink-faint);
-    border-bottom: 2px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
-    user-select: none;
-    white-space: nowrap;
-  }
-  .tab:hover { color: var(--ink-bright); }
-  .tab.active { color: var(--gold-mid); border-bottom-color: var(--ember); }
-  .tab.stub { opacity: 0.4; cursor: default; }
-  .tab.stub:hover { color: var(--ink-faint); }
+/* SECTION TITLE */
+.section-title { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 600; color: var(--gold-mid); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1.1rem; padding-bottom: 0.45rem; border-bottom: 1px solid var(--stone-border); display: flex; align-items: center; gap: 0.5rem; }
+.section-title::before { content: '✦'; color: var(--ember); font-size: 0.65rem; }
 
-  /* ── LAYOUT ── */
-  main { max-width: 820px; margin: 0 auto; padding: 1.6rem 1rem 3rem; }
-  .panel { display: none; }
-  .panel.active { display: block; }
+/* COMING SOON */
+.coming-soon { text-align: center; padding: 4rem 2rem; color: var(--ink-faint); font-style: italic; font-size: 1.05rem; }
+.coming-soon .rune { font-size: 2rem; margin-bottom: 1rem; opacity: 0.25; }
 
-  .section-title {
-    font-family: 'Cinzel', serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--gold-mid);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    margin-bottom: 1.1rem;
-    padding-bottom: 0.45rem;
-    border-bottom: 1px solid var(--stone-border);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .section-title::before { content: '✦'; color: var(--ember); font-size: 0.65rem; }
+/* BUTTONS */
+.btn-generate { display: block; width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, var(--stone-raised) 0%, var(--stone-surface) 100%); border: 1px solid var(--ember); border-radius: 2px; color: var(--parchment-warm); font-family: 'Cinzel', serif; font-size: 0.82rem; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; margin-bottom: 1.3rem; transition: border-color 0.2s, box-shadow 0.2s; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.btn-generate:hover { border-color: var(--ember-bright); box-shadow: 0 2px 20px rgba(200,100,40,0.3); }
+.btn-generate:active { transform: translateY(1px); }
+.btn-roll { background: var(--stone-raised); border: 1px solid var(--stone-rim); border-radius: 2px; color: var(--ink-mid); font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.36rem 0.9rem; cursor: pointer; transition: color 0.15s, border-color 0.15s; flex-shrink: 0; }
+.btn-roll:hover { color: var(--gold-bright); border-color: var(--gold-dim); }
+.btn-prompt-inline { display: inline-block; margin-top: 0.7rem; padding: 0.45rem 1.1rem; background: var(--stone-raised); border: 1px solid var(--prompt-color); border-radius: 2px; color: var(--prompt-color); font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+.btn-prompt-inline:hover { background: var(--stone-mid); }
 
-  .coming-soon { text-align: center; padding: 4rem 2rem; color: var(--ink-faint); font-style: italic; font-size: 1.05rem; }
-  .coming-soon .rune { font-size: 2rem; margin-bottom: 1rem; opacity: 0.25; }
+/* CARDS */
+.table-card { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.85rem 1rem 1rem; margin-bottom: 0.8rem; }
+.table-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+.table-label { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); font-weight: 600; }
+.die-badge { font-size: 0.75rem; color: var(--ink-faint); font-style: italic; }
 
-  /* ── BUTTONS ── */
-  .btn-generate {
-    display: block;
-    width: 100%;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, var(--stone-raised) 0%, var(--stone-surface) 100%);
-    border: 1px solid var(--ember);
-    border-radius: 2px;
-    color: var(--parchment-warm);
-    font-family: 'Cinzel', serif;
-    font-size: 0.82rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-bottom: 1.3rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  }
-  .btn-generate:hover { border-color: var(--ember-bright); box-shadow: 0 2px 20px rgba(200,100,40,0.3); }
-  .btn-generate:active { transform: translateY(1px); }
+/* RESULTS */
+.result-display { background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; padding: 0.6rem 0.85rem; min-height: 2.5rem; font-style: italic; color: var(--result-text); font-size: 1.08rem; font-weight: 600; line-height: 1.45; flex: 1; }
+.result-display.empty { color: var(--ink-faint); font-weight: 400; font-size: 0.9rem; font-style: normal; }
+.roll-num { font-style: normal; font-size: 0.68rem; color: var(--ember); font-family: 'Cinzel', serif; font-weight: 400; margin-right: 0.4rem; }
+.row-flex { display: flex; gap: 0.6rem; align-items: flex-start; }
 
-  .btn-roll {
-    background: var(--stone-raised);
-    border: 1px solid var(--stone-rim);
-    border-radius: 2px;
-    color: var(--ink-mid);
-    font-family: 'Cinzel', serif;
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.36rem 0.9rem;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-    flex-shrink: 0;
-  }
-  .btn-roll:hover { color: var(--gold-bright); border-color: var(--gold-dim); }
+/* COMBINED RESULT BOX */
+.combined-result { background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; padding: 1rem 1.2rem; margin-bottom: 1.6rem; }
+.combined-result.empty { text-align: center; color: var(--ink-faint); font-style: italic; padding: 2rem; font-size: 1rem; }
+.room-line { display: flex; gap: 0.7rem; padding: 0.34rem 0; border-bottom: 1px solid rgba(90,74,50,0.25); align-items: baseline; }
+.room-line:last-child { border-bottom: none; }
+.room-key { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); min-width: 92px; flex-shrink: 0; padding-top: 0.12rem; }
+.room-val { color: var(--result-text); font-style: italic; font-size: 1.08rem; font-weight: 600; line-height: 1.4; flex: 1; }
+.twist-line .room-key { color: var(--ember); }
+.twist-line .room-val { color: var(--ember-bright); }
+.crossover-line .room-key { color: var(--crossover); }
+.crossover-line .room-val { color: var(--crossover); }
 
-  /* inline prompt trigger — appears in oracle result on a Twist */
-  .btn-prompt-inline {
-    display: inline-block;
-    margin-top: 0.7rem;
-    padding: 0.45rem 1.1rem;
-    background: var(--stone-raised);
-    border: 1px solid var(--prompt-color);
-    border-radius: 2px;
-    color: var(--prompt-color);
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .btn-prompt-inline:hover { background: var(--stone-mid); }
+/* DUNGEON GRID */
+.dungeon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+@media (max-width: 560px) { .dungeon-grid { grid-template-columns: 1fr; } }
+.dungeon-grid .table-card { margin-bottom: 0; }
+.full-width { grid-column: 1 / -1; }
 
-  /* ── CARDS & RESULTS ── */
-  .table-card {
-    background: var(--stone-mid);
-    border: 1px solid var(--stone-border);
-    border-radius: 2px;
-    padding: 0.85rem 1rem 1rem;
-    margin-bottom: 0.8rem;
-  }
-  .table-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
-  .table-label { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mid); font-weight: 600; }
-  .die-badge { font-size: 0.75rem; color: var(--ink-faint); font-style: italic; }
+/* MODE TOGGLE */
+.mode-toggle { display: flex; margin-bottom: 1.2rem; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
+.mode-btn { flex: 1; padding: 0.75rem 1rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.mode-btn:last-child { border-right: none; }
+.mode-btn.active { background: var(--stone-raised); color: var(--parchment-warm); }
+.mode-btn:hover:not(.active) { color: var(--ink-bright); }
 
-  .result-display {
-    background: var(--result-bg);
-    border: 1px solid var(--result-border);
-    border-radius: 2px;
-    padding: 0.6rem 0.85rem;
-    min-height: 2.5rem;
-    font-style: italic;
-    color: var(--result-text);
-    font-size: 1.08rem;
-    font-weight: 600;
-    line-height: 1.45;
-    flex: 1;
-  }
-  .result-display.empty { color: var(--ink-faint); font-weight: 400; font-size: 0.9rem; font-style: normal; }
-  .roll-num { font-style: normal; font-size: 0.68rem; color: var(--ember); font-family: 'Cinzel', serif; font-weight: 400; margin-right: 0.4rem; }
-  .row-flex { display: flex; gap: 0.6rem; align-items: flex-start; }
+/* SCOPE */
+.scope-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.scope-label { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); white-space: nowrap; }
+.scope-select { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; color: var(--parchment); font-family: 'Crimson Text', Georgia, serif; font-size: 1rem; padding: 0.35rem 0.7rem; cursor: pointer; flex: 1; min-width: 160px; }
+.room-counter { font-family: 'Cinzel', serif; font-size: 0.68rem; color: var(--gold-mid); background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.32rem 0.7rem; white-space: nowrap; }
+.btn-reset-scope { background: none; border: 1px solid var(--stone-border); border-radius: 2px; color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.32rem 0.6rem; cursor: pointer; }
+.btn-reset-scope:hover { color: var(--ember); border-color: var(--ember); }
+.scope-info { font-style: italic; color: var(--ink-faint); font-size: 0.88rem; width: 100%; }
 
-  /* ── COMBINED RESULT ── */
-  .combined-result {
-    background: var(--result-bg);
-    border: 1px solid var(--result-border);
-    border-radius: 2px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.6rem;
-  }
-  .combined-result.empty { text-align: center; color: var(--ink-faint); font-style: italic; padding: 2rem; font-size: 1rem; }
-  .room-line { display: flex; gap: 0.7rem; padding: 0.34rem 0; border-bottom: 1px solid rgba(90,74,50,0.25); align-items: baseline; }
-  .room-line:last-child { border-bottom: none; }
-  .room-key { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); min-width: 92px; flex-shrink: 0; padding-top: 0.12rem; }
-  .room-val { color: var(--result-text); font-style: italic; font-size: 1.08rem; font-weight: 600; line-height: 1.4; }
-  .twist-line .room-key { color: var(--ember); }
-  .twist-line .room-val { color: var(--ember-bright); }
-  .crossover-line .room-key { color: var(--crossover-color); }
-  .crossover-line .room-val { color: var(--crossover-color); }
+/* INFO BOX */
+.info-box { background: var(--stone-mid); border: 1px solid var(--stone-border); border-left: 3px solid var(--ember); border-radius: 2px; padding: 0.7rem 1rem; margin-bottom: 1.1rem; font-size: 0.92rem; color: var(--ink-mid); line-height: 1.6; }
+.info-box.cave-mode { border-left-color: #6aaa88; }
 
-  /* ── DUNGEON GRID ── */
-  .dungeon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-  @media (max-width: 560px) { .dungeon-grid { grid-template-columns: 1fr; } }
-  .dungeon-grid .table-card { margin-bottom: 0; }
-  .full-width { grid-column: 1 / -1; }
+/* ORACLE */
+.oracle-rule { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.85rem 1.1rem; font-size: 1.05rem; color: var(--ink-mid); font-style: italic; margin-bottom: 1.2rem; line-height: 1.7; }
+.oracle-result-big { text-align: center; padding: 1.8rem 1rem 1.5rem; background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; }
+.oracle-answer { font-family: 'Cinzel', serif; font-size: clamp(2.4rem, 9vw, 3.2rem); font-weight: 700; letter-spacing: 0.12em; }
+.oracle-answer.yes   { color: var(--parchment-warm); }
+.oracle-answer.no    { color: var(--ink-mid); }
+.oracle-answer.twist { color: var(--ember-bright); }
+.oracle-modifier { font-style: italic; color: var(--ink-mid); margin-top: 0.4rem; font-size: 1.2rem; min-height: 1.8rem; }
+.oracle-roll-display { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--ink-faint); margin-top: 0.5rem; letter-spacing: 0.1em; }
+.inline-prompt-result { margin-top: 0.8rem; background: var(--stone-mid); border: 1px solid var(--stone-border); border-left: 3px solid var(--prompt-color); border-radius: 2px; padding: 0.8rem 1rem; text-align: left; }
+.inline-prompt-label { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--prompt-color); margin-bottom: 0.3rem; }
+.inline-prompt-text { font-size: 1.25rem; font-weight: 600; color: var(--result-text); font-style: italic; }
+.inline-prompt-rolls { font-family: 'Cinzel', serif; font-size: 0.62rem; color: var(--ink-faint); margin-top: 0.3rem; }
 
-  /* ── MODE TOGGLE ── */
-  .mode-toggle { display: flex; margin-bottom: 1.2rem; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
-  .mode-btn { flex: 1; padding: 0.75rem 1rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; }
-  .mode-btn:last-child { border-right: none; }
-  .mode-btn.active { background: var(--stone-raised); color: var(--parchment-warm); }
-  .mode-btn:hover:not(.active) { color: var(--ink-bright); }
+/* PROMPTS */
+.prompt-result-big { background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; padding: 2rem 1.5rem; text-align: center; margin-bottom: 1.3rem; }
+.prompt-verb { font-family: 'Cinzel', serif; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; color: var(--prompt-color); letter-spacing: 0.06em; }
+.prompt-noun { font-family: 'Cinzel', serif; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; color: var(--parchment-warm); letter-spacing: 0.06em; margin-left: 0.4em; }
+.prompt-rolls { font-family: 'Cinzel', serif; font-size: 0.68rem; color: var(--ink-faint); margin-top: 0.7rem; letter-spacing: 0.08em; }
+.prompt-note { font-style: italic; color: var(--ink-faint); font-size: 0.88rem; text-align: center; margin-bottom: 1.3rem; line-height: 1.6; }
 
-  /* ── SCOPE ── */
-  .scope-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; flex-wrap: wrap; }
-  .scope-label { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); white-space: nowrap; }
-  .scope-select { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; color: var(--parchment); font-family: 'Crimson Text', Georgia, serif; font-size: 1rem; padding: 0.35rem 0.7rem; cursor: pointer; flex: 1; min-width: 160px; }
-  .room-counter { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.06em; color: var(--gold-mid); background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.32rem 0.7rem; white-space: nowrap; }
-  .btn-reset-scope { background: none; border: 1px solid var(--stone-border); border-radius: 2px; color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.32rem 0.6rem; cursor: pointer; white-space: nowrap; }
-  .btn-reset-scope:hover { color: var(--ember); border-color: var(--ember); }
-  .scope-info { font-style: italic; color: var(--ink-faint); font-size: 0.88rem; width: 100%; min-height: 1.2rem; }
+/* LOOT */
+.loot-ctx-toggle { display: flex; margin-bottom: 1.1rem; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
+.loot-ctx-btn { flex: 1; padding: 0.7rem 0.3rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.07em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; line-height: 1.4; text-align: center; }
+.loot-ctx-btn:last-child { border-right: none; }
+.loot-ctx-btn.active { background: var(--stone-raised); color: var(--parchment-warm); }
+.loot-ctx-btn:hover:not(.active) { color: var(--ink-bright); }
+.wealth-row { display: none; margin-bottom: 1.1rem; }
+.wealth-row.visible { display: block; }
+.wealth-toggle { display: flex; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
+.wealth-btn { flex: 1; padding: 0.55rem 0.5rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.wealth-btn:last-child { border-right: none; }
+.wealth-btn.active { background: var(--stone-raised); color: var(--gold-mid); }
+.wealth-btn:hover:not(.active) { color: var(--ink-bright); }
+.loot-item-row { display: flex; gap: 0.6rem; padding: 0.34rem 0; border-bottom: 1px solid rgba(90,74,50,0.25); align-items: baseline; }
+.loot-item-row:last-child { border-bottom: none; }
+.loot-cat { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); min-width: 72px; flex-shrink: 0; padding-top: 0.15rem; }
+.loot-text { color: var(--result-text); font-style: italic; font-size: 1.05rem; font-weight: 600; flex: 1; line-height: 1.4; }
 
-  /* ── INFO BOX ── */
-  .info-box { background: var(--stone-mid); border: 1px solid var(--stone-border); border-left: 3px solid var(--ember); border-radius: 2px; padding: 0.7rem 1rem; margin-bottom: 1.1rem; font-size: 0.92rem; color: var(--ink-mid); line-height: 1.6; }
-  .info-box.cave-mode { border-left-color: #6aaa88; }
+/* NPC */
+.npc-section-label { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); margin: 1.4rem 0 0.7rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--stone-border); }
+.npc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.5rem; }
+@media (max-width: 500px) { .npc-grid { grid-template-columns: 1fr; } }
+.npc-card { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.85rem 1rem 1rem; }
+.npc-quick-result { background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; padding: 1rem 1.2rem; margin-bottom: 1.4rem; display: none; }
 
-  /* ── ORACLE ── */
-  .oracle-rule { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.85rem 1.1rem; font-size: 1.05rem; color: var(--ink-mid); font-style: italic; margin-bottom: 1.2rem; line-height: 1.7; }
-  .oracle-result-big { text-align: center; padding: 1.8rem 1rem 1.5rem; background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; }
-  .oracle-answer { font-family: 'Cinzel', serif; font-size: clamp(2.4rem, 9vw, 3.2rem); font-weight: 700; letter-spacing: 0.12em; }
-  .oracle-answer.yes   { color: var(--parchment-warm); }
-  .oracle-answer.no    { color: var(--ink-mid); }
-  .oracle-answer.twist { color: var(--ember-bright); }
-  .oracle-modifier { font-style: italic; color: var(--ink-mid); margin-top: 0.4rem; font-size: 1.2rem; min-height: 1.8rem; }
-  .oracle-roll-display { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--ink-faint); margin-top: 0.5rem; letter-spacing: 0.1em; }
-
-  /* inline prompt result (appears in oracle panel) */
-  .inline-prompt-result {
-    margin-top: 1rem;
-    background: var(--stone-mid);
-    border: 1px solid var(--stone-border);
-    border-left: 3px solid var(--prompt-color);
-    border-radius: 2px;
-    padding: 0.8rem 1rem;
-    text-align: left;
-  }
-  .inline-prompt-label { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--prompt-color); margin-bottom: 0.3rem; }
-  .inline-prompt-text { font-size: 1.25rem; font-weight: 600; color: var(--result-text); font-style: italic; }
-
-  /* ── PROMPTS PANEL ── */
-  .prompt-result-big {
-    background: var(--result-bg);
-    border: 1px solid var(--result-border);
-    border-radius: 2px;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    margin-bottom: 1.3rem;
-  }
-  .prompt-verb { font-family: 'Cinzel', serif; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; color: var(--prompt-color); letter-spacing: 0.06em; }
-  .prompt-noun { font-family: 'Cinzel', serif; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; color: var(--parchment-warm); letter-spacing: 0.06em; margin-left: 0.4em; }
-  .prompt-rolls { font-family: 'Cinzel', serif; font-size: 0.68rem; color: var(--ink-faint); margin-top: 0.7rem; letter-spacing: 0.08em; }
-  .prompt-note { font-style: italic; color: var(--ink-faint); font-size: 0.88rem; text-align: center; margin-bottom: 1.3rem; line-height: 1.6; }
-
-  /* ── MISC ── */
-  hr.divider { border: none; border-top: 1px solid var(--stone-border); margin: 1.5rem 0; }
-  .twist-note { font-size: 0.85rem; color: var(--ink-faint); font-style: italic; margin-top: 0.45rem; }
-
-  /* ── LOOT ── */
-  .loot-context-toggle { display: flex; margin-bottom: 1.1rem; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
-  .loot-ctx-btn { flex: 1; padding: 0.7rem 0.5rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; line-height: 1.3; text-align: center; }
-  .loot-ctx-btn:last-child { border-right: none; }
-  .loot-ctx-btn.active { background: var(--stone-raised); color: var(--parchment-warm); }
-  .loot-ctx-btn:hover:not(.active) { color: var(--ink-bright); }
-
-  .wealth-toggle { display: flex; gap: 0; margin-bottom: 1.1rem; border: 1px solid var(--stone-border); border-radius: 2px; overflow: hidden; }
-  .wealth-btn { flex: 1; padding: 0.55rem 0.5rem; background: var(--stone-mid); border: none; border-right: 1px solid var(--stone-border); color: var(--ink-faint); font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; }
-  .wealth-btn:last-child { border-right: none; }
-  .wealth-btn.active { background: var(--stone-raised); color: var(--gold-mid); }
-  .wealth-btn:hover:not(.active) { color: var(--ink-bright); }
-  .wealth-row { display: none; margin-bottom: 1.1rem; }
-  .wealth-row.visible { display: block; }
-
-  .loot-card { background: var(--stone-mid); border: 1px solid var(--stone-border); border-radius: 2px; padding: 0.85rem 1rem 1rem; margin-bottom: 0.9rem; }
-  .loot-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
-  .loot-result-row { display: flex; gap: 0.6rem; align-items: flex-start; }
-
-  /* ── NPC ── */
-  .npc-section-label { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ember); margin: 1.4rem 0 0.7rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--stone-border); }
-  .npc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.9rem; }
-  @media (max-width: 500px) { .npc-grid { grid-template-columns: 1fr; } }
-  .npc-grid .loot-card { margin-bottom: 0; }
-  .npc-generate-result { background: var(--result-bg); border: 1px solid var(--result-border); border-radius: 2px; padding: 1rem 1.2rem; margin-bottom: 1.4rem; display: none; }
-  .npc-generate-result .room-line { display: flex; gap: 0.7rem; padding: 0.3rem 0; border-bottom: 1px solid rgba(90,74,50,0.2); align-items: baseline; }
-  .npc-generate-result .room-line:last-child { border-bottom: none; }
-
-  @keyframes fadeUp { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
-  .revealed { animation: fadeUp 0.25s ease forwards; }
-  @keyframes flashResult { 0% { color: var(--gold-bright); } 100% { color: var(--result-text); } }
-  .flash-result { animation: flashResult 0.5s ease forwards; }
+/* MISC */
+hr.divider { border: none; border-top: 1px solid var(--stone-border); margin: 1.5rem 0; }
+.twist-note { font-size: 0.85rem; color: var(--ink-faint); font-style: italic; margin-top: 0.45rem; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+.revealed { animation: fadeUp 0.25s ease forwards; }
+@keyframes flashCol { 0% { color: var(--gold-bright); } 100% { color: var(--result-text); } }
+.flash-result { animation: flashCol 0.5s ease forwards; }
 </style>
 </head>
 <body>
@@ -350,402 +215,262 @@
 
 <main>
 
-  <!-- ══════════════════════════════════════════════════════
-       ORACLE PANEL
-  ══════════════════════════════════════════════════════ -->
-  <div id="panel-oracle" class="panel active">
-    <div class="section-title">Yes / No Oracle</div>
-    <div class="oracle-rule">
-      1–9 = No &nbsp;·&nbsp; 10 = Twist &nbsp;·&nbsp; 11–20 = Yes<br>
-      Odd rolls add <em>"But…"</em> — you name the complication. &nbsp;A Twist triggers a Prompt roll.
+<!-- ═══════════════════════════════════════════════════════════
+     ORACLE
+═══════════════════════════════════════════════════════════ -->
+<div id="panel-oracle" class="panel active">
+  <div class="section-title">Yes / No Oracle</div>
+  <div class="oracle-rule">
+    1–9 = No &nbsp;·&nbsp; 10 = Twist &nbsp;·&nbsp; 11–20 = Yes<br>
+    Odd rolls add <em>"But…"</em> — you name the complication. &nbsp;A Twist triggers a Prompt roll.
+  </div>
+  <button class="btn-generate" onclick="rollOracle()">⚄ &nbsp; Roll Oracle (d20)</button>
+  <div class="oracle-result-big" id="oracle-result-box" style="display:none;">
+    <div class="oracle-answer" id="oracle-answer"></div>
+    <div class="oracle-modifier" id="oracle-modifier"></div>
+    <div class="oracle-roll-display" id="oracle-roll-display"></div>
+    <div id="oracle-prompt-area"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DUNGEON
+═══════════════════════════════════════════════════════════ -->
+<div id="panel-dungeon" class="panel">
+  <div class="section-title">Dungeon Generator</div>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-cave"    onclick="setMode('cave')">⛰ Cave System</button>
+    <button class="mode-btn"        id="btn-dungeon" onclick="setMode('dungeon')">🏛 Constructed Dungeon</button>
+  </div>
+
+  <div class="info-box cave-mode" id="info-cave">
+    Natural formations — organic and unpredictable. No scope needed; caves end when exits run out.
+    A rare crossover result signals something <em>intentionally built</em> found in the dark.
+  </div>
+
+  <div id="info-dungeon" style="display:none;">
+    <div class="info-box">
+      Built by someone, for a purpose. Set a scope to give the dungeon dramatic shape
+      without losing the discovery of rolling room by room.
     </div>
-    <button class="btn-generate" onclick="rollOracle()">⚄ &nbsp; Roll Oracle (d20)</button>
-    <div class="oracle-result-big" id="oracle-result-box" style="display:none;">
-      <div class="oracle-answer" id="oracle-answer"></div>
-      <div class="oracle-modifier" id="oracle-modifier"></div>
-      <div class="oracle-roll-display" id="oracle-roll-display"></div>
-      <!-- Prompt trigger appears here on a Twist result -->
-      <div id="oracle-prompt-area"></div>
+    <div class="scope-row">
+      <span class="scope-label">Scope</span>
+      <select class="scope-select" id="scope-select" onchange="updateScope()">
+        <option value="">— choose scope —</option>
+        <option value="outpost">Outpost (4–6 rooms)</option>
+        <option value="keep">Small Keep (8–12 rooms)</option>
+        <option value="stronghold">Stronghold (14–20 rooms)</option>
+        <option value="fortress">Fortress (25+ rooms)</option>
+      </select>
+      <div class="room-counter" id="room-counter" style="display:none;">
+        Room <span id="room-current">0</span> of <span id="room-max">—</span>
+      </div>
+      <button class="btn-reset-scope" id="btn-reset" onclick="resetScope()" style="display:none;">Reset</button>
+    </div>
+    <div class="scope-info" id="scope-info"></div>
+  </div>
+
+  <button class="btn-generate" onclick="generateRoom()">⚄ &nbsp; Generate Next Area</button>
+  <div id="room-combined" class="combined-result empty">Choose a mode and roll to generate your first area…</div>
+
+  <hr class="divider">
+
+  <div class="dungeon-grid">
+    <div class="table-card full-width">
+      <div class="table-card-header"><span class="table-label" id="label-type">Area Type</span><span class="die-badge">d20</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-type">—</div><button class="btn-roll" onclick="rollSingle('type')">Roll</button></div>
+    </div>
+    <div class="table-card">
+      <div class="table-card-header"><span class="table-label">Size</span><span class="die-badge">d6</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-size">—</div><button class="btn-roll" onclick="rollSingle('size')">Roll</button></div>
+    </div>
+    <div class="table-card">
+      <div class="table-card-header"><span class="table-label">Exits</span><span class="die-badge">d4</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-exits">—</div><button class="btn-roll" onclick="rollSingle('exits')">Roll</button></div>
+    </div>
+    <div class="table-card">
+      <div class="table-card-header"><span class="table-label">Feature</span><span class="die-badge">d12</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-feature">—</div><button class="btn-roll" onclick="rollSingle('feature')">Roll</button></div>
+    </div>
+    <div class="table-card">
+      <div class="table-card-header"><span class="table-label">Encounter</span><span class="die-badge">d6 → d6</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-encounter">—</div><button class="btn-roll" onclick="rollSingle('encounter')">Roll</button></div>
+    </div>
+    <div class="table-card">
+      <div class="table-card-header"><span class="table-label">Atmosphere</span><span class="die-badge">d10</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-atmo">—</div><button class="btn-roll" onclick="rollSingle('atmo')">Roll</button></div>
+    </div>
+    <div class="table-card full-width">
+      <div class="table-card-header"><span class="table-label">Star-Guided Twist</span><span class="die-badge">1-in-6 → d12</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-twist">—</div><button class="btn-roll" onclick="rollSingle('twist')">Roll</button></div>
+      <div class="twist-note">Optional — fires only on a 6. Use sparingly.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PROMPTS
+═══════════════════════════════════════════════════════════ -->
+<div id="panel-prompts" class="panel">
+  <div class="section-title">Prompts</div>
+  <p class="prompt-note">
+    Roll Verb and Noun simultaneously. Take the pair as a creative spark — interpret loosely.<br>
+    <em>e.g. "Betray · Threshold" or "Conceal · Wound"</em>
+  </p>
+  <button class="btn-generate" onclick="rollPrompt()">⚄ &nbsp; Roll Prompt (d100 + d100)</button>
+  <div class="prompt-result-big" id="prompt-result-big" style="display:none;">
+    <div><span class="prompt-verb" id="prompt-verb"></span><span class="prompt-noun" id="prompt-noun"></span></div>
+    <div class="prompt-rolls" id="prompt-rolls"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOOT
+═══════════════════════════════════════════════════════════ -->
+<div id="panel-loot" class="panel">
+  <div class="section-title">Loot</div>
+
+  <div class="loot-ctx-toggle">
+    <button class="loot-ctx-btn active" id="lctx-pockets" onclick="setLootCtx('pockets',this)">Pockets<br>/ Body</button>
+    <button class="loot-ctx-btn"        id="lctx-stash"   onclick="setLootCtx('stash',this)">Stash<br>/ Office</button>
+    <button class="loot-ctx-btn"        id="lctx-cave"    onclick="setLootCtx('cave',this)">Cave<br>/ Wild</button>
+    <button class="loot-ctx-btn"        id="lctx-dungeon" onclick="setLootCtx('dungeon',this)">Dungeon<br>/ Crypt</button>
+  </div>
+
+  <div class="wealth-row" id="wealth-row">
+    <div class="wealth-toggle">
+      <button class="wealth-btn active" id="wbtn-poor" onclick="setWealth('poor',this)">Poor / Desperate</button>
+      <button class="wealth-btn"        id="wbtn-rich" onclick="setWealth('rich',this)">Successful / Flush</button>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════
-       DUNGEON PANEL
-  ══════════════════════════════════════════════════════ -->
-  <div id="panel-dungeon" class="panel">
-    <div class="section-title">Dungeon Generator</div>
+  <div class="info-box" id="loot-info" style="font-size:0.88rem;"></div>
 
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="btn-cave"    onclick="setMode('cave')">⛰ Cave System</button>
-      <button class="mode-btn"        id="btn-dungeon" onclick="setMode('dungeon')">🏛 Constructed Dungeon</button>
+  <button class="btn-generate" onclick="searchLoot()" style="margin-top:1rem;">⚄ &nbsp; Search</button>
+
+  <div id="loot-result" class="combined-result empty">Choose a context and tap Search…</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NPC
+═══════════════════════════════════════════════════════════ -->
+<div id="panel-npc" class="panel">
+  <div class="section-title">NPC</div>
+
+  <div class="npc-section-label">Quick Generate</div>
+  <button class="btn-generate" onclick="generateNPC()">⚄ &nbsp; Generate NPC</button>
+  <div class="npc-quick-result" id="npc-quick-result"></div>
+
+  <div class="npc-section-label">Interaction</div>
+  <div class="npc-grid">
+    <div class="npc-card">
+      <div class="table-card-header"><span class="table-label">Reaction</span><span class="die-badge">d6</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-reaction">—</div><button class="btn-roll" onclick="rollNPC('reaction')">Roll</button></div>
     </div>
-
-    <div class="info-box cave-mode" id="info-cave">
-      Natural formations — organic and unpredictable. No scope needed; caves end when exits run out.
-      A rare crossover result means something <em>intentionally built</em> has been found in the dark.
+    <div class="npc-card">
+      <div class="table-card-header"><span class="table-label">Cooperation</span><span class="die-badge">d6</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-coop">—</div><button class="btn-roll" onclick="rollNPC('coop')">Roll</button></div>
     </div>
-
-    <div id="info-dungeon" style="display:none;">
-      <div class="info-box">
-        Built by someone, for a purpose. Set a scope to give the dungeon dramatic shape
-        without losing the discovery of rolling room by room.
-      </div>
-      <div class="scope-row">
-        <span class="scope-label">Scope</span>
-        <select class="scope-select" id="scope-select" onchange="updateScope()">
-          <option value="">— choose scope —</option>
-          <option value="outpost">Outpost (4–6 rooms)</option>
-          <option value="keep">Small Keep (8–12 rooms)</option>
-          <option value="stronghold">Stronghold (14–20 rooms)</option>
-          <option value="fortress">Fortress (25+ rooms)</option>
-        </select>
-        <div class="room-counter" id="room-counter" style="display:none;">
-          Room <span id="room-current">0</span> of <span id="room-max">—</span>
-        </div>
-        <button class="btn-reset-scope" id="btn-reset" onclick="resetScope()" style="display:none;">Reset</button>
-      </div>
-      <div class="scope-info" id="scope-info"></div>
+    <div class="npc-card">
+      <div class="table-card-header"><span class="table-label">Loyalty Check</span><span class="die-badge">d6</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-loyalty">—</div><button class="btn-roll" onclick="rollNPC('loyalty')">Roll</button></div>
     </div>
-
-    <button class="btn-generate" onclick="generateRoom()">⚄ &nbsp; Generate Next Area</button>
-    <div id="room-combined" class="combined-result empty">Choose a mode and roll to generate your first area…</div>
-
-    <hr class="divider">
-
-    <div class="dungeon-grid">
-
-      <div class="table-card full-width">
-        <div class="table-card-header">
-          <span class="table-label" id="label-type">Area Type</span>
-          <span class="die-badge">d20</span>
-        </div>
-        <div class="row-flex">
-          <div class="result-display empty" id="res-type">—</div>
-          <button class="btn-roll" onclick="rollSingle('type')">Roll</button>
-        </div>
-      </div>
-
-      <div class="table-card">
-        <div class="table-card-header">
-          <span class="table-label">Size</span>
-          <span class="die-badge">d6</span>
-        </div>
-        <div class="row-flex">
-          <div class="result-display empty" id="res-size">—</div>
-          <button class="btn-roll" onclick="rollSingle('size')">Roll</button>
-        </div>
-      </div>
-
-      <div class="table-card">
-        <div class="table-card-header">
-          <span class="table-label">Exits</span>
-          <span class="die-badge">d4</span>
-        </div>
-        <div class="row-flex">
-          <div class="result-display empty" id="res-exits">—</div>
-          <button class="btn-roll" onclick="rollSingle('exits')">Roll</button>
-        </div>
-      </div>
-
-      <div class="table-card">
-        <div class="table-card-header">
-          <span class="table-label">Feature</span>
-          <span class="die-badge">d12</span>
-        </div>
-        <div class="row-flex">
-          <div class="result-display empty" id="res-feature">—</div>
-          <button class="btn-roll" onclick="rollSingle('feature')">Roll</button>
-        </div>
-      </div>
-
-      <div class="table-card">
-        <div class="table-card-header">
-          <span class="table-label">Encounter</span>
-          <span class="die-badge">d6 → d6</span>
-        </div>
-        <div class="row-flex">
-          <div class="result-display empty" id="res-encounter">—</div>
-          <button class="btn-roll" onclick="rollSingle('encounter')">Roll</button>
-        </div>
-      </div>
-
-      <div class="table-card">
-        <div class="table-card-header">
-          <span class="table-label">Atmosphere</span>
-          <span class="die-badge">d10</span>
-        </div>
-        <div class="row-flex">
-          <div class="result-display empty" id="res-atmo">—</div>
-          <button class="btn-roll" onclick="rollSingle('atmo')">Roll</button>
-        </div>
-      </div>
-
-      <div class="table-card full-width">
-        <div class="table-card-header">
-          <span class="table-label">Star-Guided Twist</span>
-          <span class="die-badge">1-in-6 → d12</span>
-        </div>
-        <div class="row-flex">
-          <div class="result-display empty" id="res-twist">—</div>
-          <button class="btn-roll" onclick="rollSingle('twist')">Roll</button>
-        </div>
-        <div class="twist-note">Optional — fires only on a 6. Use sparingly.</div>
-      </div>
-
+    <div class="npc-card">
+      <div class="table-card-header"><span class="table-label">Disposition</span><span class="die-badge">d8</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-disposition">—</div><button class="btn-roll" onclick="rollNPC('disposition')">Roll</button></div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════
-       PROMPTS PANEL
-  ══════════════════════════════════════════════════════ -->
-  <div id="panel-prompts" class="panel">
-    <div class="section-title">Prompts</div>
-    <p class="prompt-note">
-      Roll a Verb and a Noun. Take the combination as a creative spark — interpret it loosely.<br>
-      <em>e.g. "Betray · Threshold" or "Conceal · Wound"</em>
-    </p>
-    <button class="btn-generate" onclick="rollPrompt('prompt-verb-display','prompt-noun-display','prompt-rolls-display')">⚄ &nbsp; Roll Prompt (d100 + d100)</button>
-    <div class="prompt-result-big" id="prompt-result-big" style="display:none;">
-      <div>
-        <span class="prompt-verb" id="prompt-verb-display"></span><span class="prompt-noun" id="prompt-noun-display"></span>
-      </div>
-      <div class="prompt-rolls" id="prompt-rolls-display"></div>
+  <div class="npc-section-label">Recruitment</div>
+  <div class="npc-grid">
+    <div class="npc-card">
+      <div class="table-card-header"><span class="table-label">Motivation</span><span class="die-badge">d8</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-motivation">—</div><button class="btn-roll" onclick="rollNPC('motivation')">Roll</button></div>
+    </div>
+    <div class="npc-card">
+      <div class="table-card-header"><span class="table-label">Ask / Cost</span><span class="die-badge">d8</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-ask">—</div><button class="btn-roll" onclick="rollNPC('ask')">Roll</button></div>
+    </div>
+    <div class="npc-card" style="grid-column:1/-1;">
+      <div class="table-card-header"><span class="table-label">Capability</span><span class="die-badge">d6</span></div>
+      <div class="row-flex"><div class="result-display empty" id="res-capability">—</div><button class="btn-roll" onclick="rollNPC('capability')">Roll</button></div>
     </div>
   </div>
+</div>
 
-  <!-- ══════════════════════════════════════════════════════
-       LOOT PANEL
-  ══════════════════════════════════════════════════════ -->
-  <div id="panel-loot" class="panel">
-    <div class="section-title">Loot</div>
-
-    <!-- Four search contexts -->
-    <div class="loot-context-toggle">
-      <button class="loot-ctx-btn active" id="lctx-pockets" onclick="setLootCtx('pockets',this)">Pockets<br>/ Body</button>
-      <button class="loot-ctx-btn"        id="lctx-stash"   onclick="setLootCtx('stash',this)">Stash<br>/ Office</button>
-      <button class="loot-ctx-btn"        id="lctx-cave"    onclick="setLootCtx('cave',this)">Cave<br>/ Wild</button>
-      <button class="loot-ctx-btn"        id="lctx-dungeon" onclick="setLootCtx('dungeon',this)">Dungeon<br>/ Crypt</button>
-    </div>
-
-    <!-- Wealth toggle — Stash only -->
-    <div class="wealth-row" id="wealth-row">
-      <div class="wealth-toggle">
-        <button class="wealth-btn active" id="wbtn-poor" onclick="setWealth('poor',this)">Poor / Desperate</button>
-        <button class="wealth-btn"        id="wbtn-rich" onclick="setWealth('rich',this)">Successful / Flush</button>
-      </div>
-    </div>
-
-    <div class="info-box" id="loot-info-box" style="font-size:0.88rem; margin-bottom:1.1rem;"></div>
-
-    <button class="btn-generate" onclick="searchLoot()">⚄ &nbsp; Search</button>
-
-    <!-- Search result — full item list -->
-    <div id="loot-result" class="combined-result empty">Choose a context and search…</div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════
-       NPC PANEL
-  ══════════════════════════════════════════════════════ -->
-  <div id="panel-npc" class="panel">
-    <div class="section-title">NPC</div>
-
-    <!-- Quick Generate -->
-    <div class="npc-section-label">Quick Generate</div>
-    <button class="btn-generate" onclick="generateNPC()">⚄ &nbsp; Generate NPC</button>
-    <div class="npc-generate-result" id="npc-quick-result"></div>
-
-    <!-- Interaction rolls -->
-    <div class="npc-section-label">Interaction</div>
-    <div class="npc-grid">
-
-      <div class="loot-card">
-        <div class="loot-card-header">
-          <span class="table-label">Reaction</span>
-          <span class="die-badge">d6</span>
-        </div>
-        <div class="loot-result-row">
-          <div class="result-display empty" id="res-npc-reaction">—</div>
-          <button class="btn-roll" onclick="rollNPCSingle('reaction')">Roll</button>
-        </div>
-      </div>
-
-      <div class="loot-card">
-        <div class="loot-card-header">
-          <span class="table-label">Cooperation</span>
-          <span class="die-badge">d6</span>
-        </div>
-        <div class="loot-result-row">
-          <div class="result-display empty" id="res-npc-coop">—</div>
-          <button class="btn-roll" onclick="rollNPCSingle('coop')">Roll</button>
-        </div>
-      </div>
-
-      <div class="loot-card">
-        <div class="loot-card-header">
-          <span class="table-label">Loyalty Check</span>
-          <span class="die-badge">d6</span>
-        </div>
-        <div class="loot-result-row">
-          <div class="result-display empty" id="res-npc-loyalty">—</div>
-          <button class="btn-roll" onclick="rollNPCSingle('loyalty')">Roll</button>
-        </div>
-      </div>
-
-      <div class="loot-card">
-        <div class="loot-card-header">
-          <span class="table-label">Disposition</span>
-          <span class="die-badge">d8</span>
-        </div>
-        <div class="loot-result-row">
-          <div class="result-display empty" id="res-npc-disposition">—</div>
-          <button class="btn-roll" onclick="rollNPCSingle('disposition')">Roll</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Recruitment -->
-    <div class="npc-section-label">Recruitment</div>
-    <div class="npc-grid">
-
-      <div class="loot-card">
-        <div class="loot-card-header">
-          <span class="table-label">Motivation</span>
-          <span class="die-badge">d8</span>
-        </div>
-        <div class="loot-result-row">
-          <div class="result-display empty" id="res-npc-motivation">—</div>
-          <button class="btn-roll" onclick="rollNPCSingle('motivation')">Roll</button>
-        </div>
-      </div>
-
-      <div class="loot-card">
-        <div class="loot-card-header">
-          <span class="table-label">Ask / Cost</span>
-          <span class="die-badge">d8</span>
-        </div>
-        <div class="loot-result-row">
-          <div class="result-display empty" id="res-npc-ask">—</div>
-          <button class="btn-roll" onclick="rollNPCSingle('ask')">Roll</button>
-        </div>
-      </div>
-
-      <div class="loot-card full-width" style="grid-column:1/-1;">
-        <div class="loot-card-header">
-          <span class="table-label">Capability</span>
-          <span class="die-badge">d6</span>
-        </div>
-        <div class="loot-result-row">
-          <div class="result-display empty" id="res-npc-capability">—</div>
-          <button class="btn-roll" onclick="rollNPCSingle('capability')">Roll</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div id="panel-encounter" class="panel">
-    <div class="section-title">Encounter / Location</div>
-    <div class="coming-soon"><div class="rune">⧖</div>Coming in the next build.</div>
-  </div>
+<!-- Encounter stub -->
+<div id="panel-encounter" class="panel">
+  <div class="section-title">Encounter / Location</div>
+  <div class="coming-soon"><div class="rune">⧖</div>Coming in the next build.</div>
+</div>
 
 </main>
 
 <script>
-// ════════════════════════════════════════════════════════════════
-//
-//  SERAPH'S ORACLE — TABLE DATA
-//
-//  All tables are plain JavaScript arrays. Index 0 is always null
-//  (unused) so that roll results map directly: roll(20) → index 1-20.
-//
-//  To edit a table entry, find the array below and change the string.
-//  To add entries, add to the array AND update the roll(N) call in
-//  the corresponding getRoll___() function to match the new length.
-//
-// ════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════════════════
 
+function roll(n) { return Math.floor(Math.random() * n) + 1; }
+function rn(n)   { return '<span class="roll-num">[' + n + ']</span>'; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-// ── PROMPTS ──────────────────────────────────────────────────────
-//
+function setRes(id, html, flash) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = html;
+  el.classList.remove('empty');
+  if (flash) { el.classList.remove('flash-result'); void el.offsetWidth; el.classList.add('flash-result'); }
+}
+
+function isCrossover(t) { return t && t.indexOf('CROSSOVER') === 0; }
+
+// ═══════════════════════════════════════════════════════════════════
+//  PROMPT TABLE DATA
 //  Two d100 tables: VERBS and NOUNS.
-//  Both are rolled simultaneously and displayed as a pair.
-//  These are original entries in the spirit of SoloDark prompts —
-//  dark, grounded, ShadowDark-flavored. No high fantasy whimsy.
-//
-//  To replace or supplement with your SoloDark PDF entries:
-//  Just swap out or add to the strings below (100 entries each).
-//
-const PROMPT_VERBS = [
-  null, // index 0 unused
-  // ── 1–20: Action & motion ──
-  "Pursue",   "Flee",      "Conceal",   "Reveal",    "Betray",
-  "Sacrifice", "Abandon",  "Reclaim",   "Destroy",   "Protect",
-  "Follow",   "Escape",    "Ambush",    "Stalk",     "Summon",
-  "Bind",     "Release",   "Endure",    "Resist",    "Yield",
-  // ── 21–40: Discovery & knowledge ──
-  "Uncover",  "Remember",  "Forget",    "Seek",      "Witness",
-  "Decipher", "Question",  "Doubt",     "Confirm",   "Deny",
-  "Search",   "Discover",  "Warn",      "Silence",   "Speak",
-  "Listen",   "Read",      "Erase",     "Record",    "Carry",
-  // ── 41–60: Conflict & consequence ──
-  "Challenge","Provoke",   "Deceive",   "Trust",     "Wound",
-  "Heal",     "Condemn",   "Spare",     "Trade",     "Steal",
-  "Return",   "Lure",      "Guard",     "Threaten",  "Bargain",
-  "Demand",   "Refuse",    "Offer",     "Accept",    "Reject",
-  // ── 61–80: Change & threshold ──
-  "Awaken",   "Enter",     "Leave",     "Cross",     "Open",
-  "Close",    "Break",     "Mend",      "Lose",      "Find",
-  "Change",   "Remain",    "Transform", "Unravel",   "Restore",
-  "Corrupt",  "Purge",     "Inherit",   "Carry",     "Drop",
-  // ── 81–100: The uncanny ──
-  "Haunt",    "Draw",      "Mark",      "Curse",     "Bless",
-  "Invoke",   "Shatter",   "Bleed",     "Rise",      "Fall",
-  "Burn",     "Bury",      "Linger",    "Vanish",    "Return",
-  "Consume",  "Feed",      "Dream",     "Wander",    "End"
+//  Original entries in the spirit of SoloDark prompts.
+//  To replace with your SoloDark PDF entries: swap strings in the arrays below.
+//  Both arrays must have exactly 100 entries (indices 1-100; index 0 unused).
+// ═══════════════════════════════════════════════════════════════════
+
+var VERBS = [
+  null,
+  "Pursue","Flee","Conceal","Reveal","Betray","Sacrifice","Abandon","Reclaim","Destroy","Protect",
+  "Follow","Escape","Ambush","Stalk","Summon","Bind","Release","Endure","Resist","Yield",
+  "Uncover","Remember","Forget","Seek","Witness","Decipher","Question","Doubt","Confirm","Deny",
+  "Search","Discover","Warn","Silence","Speak","Listen","Read","Erase","Record","Carry",
+  "Challenge","Provoke","Deceive","Trust","Wound","Heal","Condemn","Spare","Trade","Steal",
+  "Return","Lure","Guard","Threaten","Bargain","Demand","Refuse","Offer","Accept","Reject",
+  "Awaken","Enter","Leave","Cross","Open","Close","Break","Mend","Lose","Find",
+  "Change","Remain","Transform","Unravel","Restore","Corrupt","Purge","Inherit","Drop","Mark",
+  "Haunt","Draw","Curse","Bless","Invoke","Shatter","Bleed","Rise","Fall","Burn",
+  "Bury","Linger","Vanish","Consume","Feed","Dream","Wander","End","Halt","Reckon"
 ];
 
-const PROMPT_NOUNS = [
-  null, // index 0 unused
-  // ── 1–20: People & roles ──
-  "Ally",      "Enemy",     "Stranger",  "Guard",     "Prisoner",
-  "Thief",     "Merchant",  "Priest",    "Soldier",   "Fugitive",
-  "Child",     "Elder",     "Servant",   "Lord",      "Ghost",
-  "Traitor",   "Witness",   "Healer",    "Hunter",    "Outcast",
-  // ── 21–40: Places & passages ──
-  "Threshold", "Gate",      "Vault",     "Grave",     "Road",
-  "Ruin",      "Shrine",    "Cell",      "Tower",     "Hollow",
-  "Bridge",    "Passage",   "Crossroads","Market",    "Camp",
-  "Hearth",    "Depths",    "Summit",    "Shore",     "Dark",
-  // ── 41–60: Objects & materials ──
-  "Blade",     "Chain",     "Key",       "Map",       "Coin",
-  "Torch",     "Rope",      "Mark",      "Seal",      "Letter",
-  "Wound",     "Relic",     "Bone",      "Ember",     "Shadow",
-  "Blood",     "Ash",       "Oath",      "Debt",      "Name",
-  // ── 61–80: Concepts & forces ──
-  "Truth",     "Lie",       "Fear",      "Hunger",    "Silence",
-  "Memory",    "Dream",     "Mercy",     "Vengeance", "Warning",
-  "Curse",     "Bargain",   "Power",     "Weakness",  "Secret",
-  "Omen",      "Fate",      "Cost",      "Grief",     "Hope",
-  // ── 81–100: The uncanny ──
-  "Darkness",  "Void",      "Scar",      "Threshold", "Remnant",
-  "Whisper",   "Presence",  "Rot",       "Light",     "Mirror",
-  "Hunger",    "Creature",  "Sign",      "Path",      "Ending",
-  "Origin",    "Burden",    "Gift",      "Price",     "Star"
+var NOUNS = [
+  null,
+  "Ally","Enemy","Stranger","Guard","Prisoner","Thief","Merchant","Priest","Soldier","Fugitive",
+  "Child","Elder","Servant","Lord","Ghost","Traitor","Witness","Healer","Hunter","Outcast",
+  "Threshold","Gate","Vault","Grave","Road","Ruin","Shrine","Cell","Tower","Hollow",
+  "Bridge","Passage","Crossroads","Market","Camp","Hearth","Depths","Summit","Shore","Dark",
+  "Blade","Chain","Key","Map","Coin","Torch","Rope","Mark","Seal","Letter",
+  "Wound","Relic","Bone","Ember","Shadow","Blood","Ash","Oath","Debt","Name",
+  "Truth","Lie","Fear","Hunger","Silence","Memory","Dream","Mercy","Vengeance","Warning",
+  "Curse","Bargain","Power","Weakness","Secret","Omen","Fate","Cost","Grief","Hope",
+  "Darkness","Void","Scar","Remnant","Whisper","Presence","Rot","Light","Mirror","Sign",
+  "Path","Ending","Origin","Burden","Gift","Price","Star","Wound","Kin","Pact"
 ];
 
+// ═══════════════════════════════════════════════════════════════════
+//  CAVE TABLE DATA
+//  Used when mode is Cave System.
+//  Results 19-20 are crossover moments.
+//  To edit: change the strings. Keep array lengths matching the roll(N) calls.
+// ═══════════════════════════════════════════════════════════════════
 
-// ── CAVE TABLES ───────────────────────────────────────────────────
-//
-//  Used when Dungeon mode is set to "Cave System."
-//  All entries are natural, geological, or biological.
-//  No constructed elements except on results 19-20 (crossover).
-//
-const CAVE = {
-
-  // d20 — Formation / Tunnel type
-  // Results 19-20 are crossover moments: constructed work found in natural cave.
-  // Edit entries freely. Keep 19-20 as crossover signals or replace with your own.
+var CAVE = {
+  // d20
   type: [
     null,
     "Narrow tunnel — single file, ceiling close overhead",
@@ -766,23 +491,20 @@ const CAVE = {
     "Bone yard — remains of many creatures, old and fresh",
     "Hot spring — mineral-rich water steams in the dark",
     "Ancient streambed — carved smooth, dry for a long time",
-    "⇄ CROSSOVER — dressed stonework appears in the cave wall. Something was built here.",
-    "⇄ CROSSOVER — a carved archway, deliberate and old. The cave becomes something else."
+    "CROSSOVER — dressed stonework appears in the cave wall. Something was built here.",
+    "CROSSOVER — a carved archway, deliberate and old. The cave becomes something else."
   ],
-
-  // d6 — Size of the formation or chamber
+  // d6
   size: [
     null,
     "Constricted — barely passable, one at a time",
     "Cramped — move with care",
-    "Modest — room to breathe, ten paces across",
+    "Modest — ten paces across",
     "Spacious — twenty paces, room to fight",
     "Expansive — fifty paces, edges unclear",
     "Vast — the far wall is not visible"
   ],
-
-  // d4 — Number of exits (passages leading out)
-  // A result of 1 means only the way you came — a dead end.
+  // d4
   exits: [
     null,
     "Dead end — only the way you came",
@@ -790,11 +512,10 @@ const CAVE = {
     "Two passages — a choice",
     "Three passages — the cave divides seriously"
   ],
-
-  // d12 — Notable feature of this cave area
+  // d12
   feature: [
     null,
-    "Crystal formation — catches light in ways it shouldn't",
+    "Crystal formation — catches light in ways it should not",
     "Deep claw marks — something large passed this way",
     "Underground stream — cold and fast, heard before seen",
     "Phosphorescent moss — faint blue-green glow on the walls",
@@ -807,8 +528,7 @@ const CAVE = {
     "Guano deep — something large roosts or roosted above",
     "Hidden niche — naturally concealed, small and waiting"
   ],
-
-  // d10 — Atmosphere / sensory impression
+  // d10
   atmo: [
     null,
     "Cold and wet — stone weeps, every breath fogs",
@@ -816,16 +536,14 @@ const CAVE = {
     "Underground wind — a constant low moan through the rock",
     "Mineral smell — clean and ancient, like deep earth",
     "Warmth rising from below — volcanic or thermal source",
-    "Wrong echoes — sounds return too late, or from the wrong direction",
+    "Wrong echoes — sounds return too late, from the wrong direction",
     "Faint luminescence — source unclear, just enough to notice",
     "Dripping rhythm — steady, from somewhere above, not stopping",
     "Heavy air — breathing takes more effort than it should",
     "Eerie stillness — the kind that suggests you are being watched"
   ],
-
-  // d6 — Encounter check (1 = encounter; roll d6 again for type)
-  // On a 1, roll encounterType below for the kind of creature or hazard.
-  encounterType: [
+  // d6 encounter type (used when encounter check succeeds)
+  encType: [
     null,
     "Cave beast — something that belongs here",
     "Vermin swarm — bats, insects, or worse in number",
@@ -836,19 +554,15 @@ const CAVE = {
   ]
 };
 
+// ═══════════════════════════════════════════════════════════════════
+//  DUNGEON TABLE DATA
+//  Used when mode is Constructed Dungeon.
+//  All entries reflect SD Core medieval-gothic aesthetic.
+//  Results 19-20 are crossover moments.
+// ═══════════════════════════════════════════════════════════════════
 
-// ── DUNGEON TABLES ────────────────────────────────────────────────
-//
-//  Used when Dungeon mode is set to "Constructed Dungeon."
-//  All entries reflect ShadowDark's medieval-gothic aesthetic:
-//  functional, decayed, purposeful architecture.
-//  No anachronistic elements. No invented spell types or items.
-//  Results 19-20 are crossover moments: natural cave breaking through.
-//
-const DUNGEON = {
-
-  // d20 — Room / Corridor type
-  // Results 19-20 signal crossover into natural cave.
+var DUNGEON = {
+  // d20
   type: [
     null,
     "Narrow corridor — torch brackets, arrow slits, deliberate design",
@@ -869,11 +583,10 @@ const DUNGEON = {
     "Junction hall — three or four passages converge here",
     "Pit room — trap, disposal shaft, or deliberate obstacle",
     "Collapsed chamber — beams down, ceiling cracked, unsafe",
-    "⇄ CROSSOVER — stonework gives way to raw cave. The dungeon was built around this.",
-    "⇄ CROSSOVER — a section of natural cavern incorporated into the structure. Older than the dungeon."
+    "CROSSOVER — stonework gives way to raw cave. The dungeon was built around this.",
+    "CROSSOVER — a section of natural cavern incorporated into the structure. Older than the dungeon."
   ],
-
-  // d6 — Room or corridor size
+  // d6
   size: [
     null,
     "Tight — ten by ten, barely functional",
@@ -883,19 +596,15 @@ const DUNGEON = {
     "Large — sixty by sixty, built to hold many",
     "Hall-scale — long or wide, made to accommodate a crowd"
   ],
-
-  // d4 — Number of exits (doors, passages, archways)
-  // Result 1 is a dead end or sealed door.
+  // d4
   exits: [
     null,
-    "One exit — a dead end, or the passage narrows to nothing",
+    "One exit — dead end, or passage narrows to nothing",
     "Two exits — forward and one branch",
     "Three exits — a meaningful decision",
     "Four exits — a hub, significant traffic once passed here"
   ],
-
-  // d12 — Notable feature of this room or corridor
-  // "Valuable — roll Loot" on result 12 links to the Loot tab (coming soon).
+  // d12
   feature: [
     null,
     "Ruined furniture — broken, scattered, telling a story",
@@ -911,8 +620,7 @@ const DUNGEON = {
     "Tracks — recent, multiple, moving with clear direction",
     "Valuable — roll Loot"
   ],
-
-  // d10 — Atmosphere / sensory impression
+  // d10
   atmo: [
     null,
     "Stale air — has not moved in years, thick with age",
@@ -920,16 +628,14 @@ const DUNGEON = {
     "Blood smell — hard to say if it is old or fresh",
     "Supernatural cold — no draft, just wrong temperature",
     "Whispering — not quite words, not quite wind, not stopping",
-    "Distant sound — metal on stone, or a voice, or something else",
+    "Distant sound — metal on stone, a voice, or something else",
     "Oppressive weight — the ceiling feels lower than it is",
     "Magical residue — the air hums faintly with old workings",
     "Rot and mildew — water damage, slow decay, soft underfoot",
     "Uncanny stillness — even your breathing seems intrusive"
   ],
-
-  // d6 — Encounter check (1 = encounter; roll d6 again for type)
-  // All types conform to ShadowDark Core Rules creature categories.
-  encounterType: [
+  // d6 encounter type
+  encType: [
     null,
     "Humanoid — guards, cultists, bandits, or something organised",
     "Undead — animated, purposeful, bound to this specific place",
@@ -940,19 +646,19 @@ const DUNGEON = {
   ]
 };
 
+// ═══════════════════════════════════════════════════════════════════
+//  STAR-GUIDED TWISTS
+//  d12 — fires only when the 1-in-6 chance roll is a 6.
+//  Tied to Seraph's Star Map and SoloDark star mechanic.
+//  Edit freely to match your campaign's ongoing themes.
+// ═══════════════════════════════════════════════════════════════════
 
-// ── STAR-GUIDED TWISTS ───────────────────────────────────────────
-//
-//  d12 table — fires only when the twist d6 check rolls a 6.
-//  Tied to Seraph's Star Map and SoloDark's star mechanic.
-//  Edit freely to reflect your campaign's ongoing themes.
-//
-const TWISTS = [
+var TWISTS = [
   null,
   "Constellation pattern traced in the dust — deliberate, and recent",
   "A star-shaped crack in the stone, edges still sharp and clean",
   "A drifting mote of cold light that illuminates nothing",
-  "Déjà vu — you have been here, or dreamed this place clearly",
+  "Deja vu — you have been here, or dreamed this place clearly",
   "A whisper that sounds like a name — possibly yours",
   "A symbol tied to your Star Map, here where it should not be",
   "A moment of perfect stillness — the world holds its breath",
@@ -963,347 +669,43 @@ const TWISTS = [
   "Cosmic wrongness — gravity, time, or light misbehaves briefly"
 ];
 
+// ═══════════════════════════════════════════════════════════════════
+//  DUNGEON SCOPE DATA
+// ═══════════════════════════════════════════════════════════════════
 
-// ── SCOPE DATA ───────────────────────────────────────────────────
-//
-//  Defines the room-count budget for each dungeon scope.
-//  min/max are the range; a random value is picked on scope selection.
-//  desc is the flavour text shown below the selector.
-//
-const SCOPE_DATA = {
-  outpost:    { min: 4,  max: 6,  desc: "Tight and purposeful. Danger arrives fast." },
-  keep:       { min: 8,  max: 12, desc: "A few branches, one main objective, room for secrets." },
-  stronghold: { min: 14, max: 20, desc: "Multiple wings, possible factions, layered threats." },
-  fortress:   { min: 25, max: 40, desc: "A campaign location. Sessions, not a session." }
+var SCOPE_DATA = {
+  outpost:    { min:4,  max:6,  desc:"Tight and purposeful. Danger arrives fast." },
+  keep:       { min:8,  max:12, desc:"A few branches, one main objective, room for secrets." },
+  stronghold: { min:14, max:20, desc:"Multiple wings, possible factions, layered threats." },
+  fortress:   { min:25, max:40, desc:"A campaign location. Sessions, not a session." }
 };
 
-
-// ════════════════════════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════════════════════════
-
-let currentMode = 'cave';
-let scopeMax    = null;
-let roomCount   = 0;
-
-
-// ════════════════════════════════════════════════════════════════
-//  UTILITIES
-// ════════════════════════════════════════════════════════════════
-
-function roll(n) { return Math.floor(Math.random() * n) + 1; }
-function rn(n)   { return `<span class="roll-num">[${n}]</span>`; }
-
-function setRes(id, html, flash) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.innerHTML = html;
-  el.classList.remove('empty');
-  if (flash) { el.classList.remove('flash-result'); void el.offsetWidth; el.classList.add('flash-result'); }
-}
-
-function isCrossover(t) { return t && t.startsWith('⇄'); }
-
-
-// ════════════════════════════════════════════════════════════════
-//  PROMPTS
-// ════════════════════════════════════════════════════════════════
-
-function rollPrompt(verbId, nounId, rollsId) {
-  const vr = roll(100);
-  const nr = roll(100);
-  const verb = PROMPT_VERBS[vr];
-  const noun = PROMPT_NOUNS[nr];
-
-  // Used for both the dedicated Prompts tab and the inline oracle trigger
-  if (verbId === 'prompt-verb-display') {
-    const big = document.getElementById('prompt-result-big');
-    big.style.display = 'block';
-    big.classList.remove('revealed'); void big.offsetWidth; big.classList.add('revealed');
-  }
-
-  const vEl = document.getElementById(verbId);
-  const nEl = document.getElementById(nounId);
-  const rEl = document.getElementById(rollsId);
-  if (vEl) { vEl.textContent = verb; }
-  if (nEl) { nEl.textContent = ' ' + noun; }
-  if (rEl) { rEl.textContent = `Verb [${vr}] · Noun [${nr}]`; }
-}
-
-// Called inline from oracle panel on a Twist
-// Button stays visible so you can reroll as many times as needed
-function rollInlinePrompt() {
-  const area = document.getElementById('oracle-prompt-area');
-  const vr = roll(100);
-  const nr = roll(100);
-  area.innerHTML = `
-    <button class="btn-prompt-inline" onclick="rollInlinePrompt()">⚄ Roll Prompt</button>
-    <div class="inline-prompt-result revealed">
-      <div class="inline-prompt-label">Prompt</div>
-      <div class="inline-prompt-text">${PROMPT_VERBS[vr]} &middot; ${PROMPT_NOUNS[nr]}</div>
-      <div style="font-family:'Cinzel',serif;font-size:0.62rem;color:var(--ink-faint);margin-top:0.4rem;">
-        Verb [${vr}] &nbsp;·&nbsp; Noun [${nr}]
-      </div>
-    </div>`;
-}
-
-
-// ════════════════════════════════════════════════════════════════
-//  ORACLE
-// ════════════════════════════════════════════════════════════════
-
-function rollOracle() {
-  const r    = roll(20);
-  const box  = document.getElementById('oracle-result-box');
-  const ansEl  = document.getElementById('oracle-answer');
-  const modEl  = document.getElementById('oracle-modifier');
-  const rollEl = document.getElementById('oracle-roll-display');
-  const promptArea = document.getElementById('oracle-prompt-area');
-
-  box.style.display = 'block';
-  rollEl.textContent = `Roll: ${r}`;
-  promptArea.innerHTML = ''; // clear previous prompt
-
-  if (r === 10) {
-    ansEl.textContent = 'TWIST';
-    ansEl.className   = 'oracle-answer twist';
-    modEl.textContent = 'Roll a Prompt.';
-    // Auto-trigger: show prompt button and roll immediately
-    promptArea.innerHTML = `<button class="btn-prompt-inline" onclick="rollInlinePrompt()">⚄ Roll Prompt</button>`;
-  } else if (r <= 9) {
-    ansEl.textContent = 'NO';
-    ansEl.className   = 'oracle-answer no';
-    modEl.textContent = (r % 2 !== 0) ? 'But… (add a complication)' : '';
-  } else {
-    ansEl.textContent = 'YES';
-    ansEl.className   = 'oracle-answer yes';
-    modEl.textContent = (r % 2 !== 0) ? 'But… (add a complication)' : '';
-  }
-
-  box.classList.remove('revealed'); void box.offsetWidth; box.classList.add('revealed');
-}
-
-
-// ════════════════════════════════════════════════════════════════
-//  DUNGEON MODE
-// ════════════════════════════════════════════════════════════════
-
-function setMode(mode) {
-  currentMode = mode;
-  document.getElementById('btn-cave').classList.toggle('active', mode === 'cave');
-  document.getElementById('btn-dungeon').classList.toggle('active', mode === 'dungeon');
-  document.getElementById('info-cave').style.display    = mode === 'cave'    ? '' : 'none';
-  document.getElementById('info-dungeon').style.display = mode === 'dungeon' ? '' : 'none';
-  document.getElementById('label-type').textContent = mode === 'cave' ? 'Formation / Tunnel' : 'Room / Corridor';
-  ['res-type','res-size','res-exits','res-feature','res-encounter','res-atmo','res-twist'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.innerHTML = '—'; el.classList.add('empty'); }
-  });
-  const box = document.getElementById('room-combined');
-  box.className   = 'combined-result empty';
-  box.textContent = 'Choose a mode and roll to generate your first area…';
-}
-
-
-// ════════════════════════════════════════════════════════════════
-//  SCOPE
-// ════════════════════════════════════════════════════════════════
-
-function updateScope() {
-  const sel      = document.getElementById('scope-select').value;
-  const info     = document.getElementById('scope-info');
-  const counter  = document.getElementById('room-counter');
-  const resetBtn = document.getElementById('btn-reset');
-  if (!sel) { scopeMax = null; roomCount = 0; info.textContent = ''; counter.style.display = 'none'; resetBtn.style.display = 'none'; return; }
-  const d   = SCOPE_DATA[sel];
-  scopeMax  = d.min + Math.floor(Math.random() * (d.max - d.min + 1));
-  roomCount = 0;
-  info.textContent = d.desc + ` Target: ~${scopeMax} rooms.`;
-  counter.style.display  = '';
-  resetBtn.style.display = '';
-  document.getElementById('room-current').textContent = roomCount;
-  document.getElementById('room-max').textContent     = scopeMax;
-}
-
-function resetScope() {
-  document.getElementById('scope-select').value = '';
-  scopeMax = null; roomCount = 0;
-  document.getElementById('scope-info').textContent      = '';
-  document.getElementById('room-counter').style.display  = 'none';
-  document.getElementById('btn-reset').style.display     = 'none';
-}
-
-
-// ════════════════════════════════════════════════════════════════
-//  ROLL HELPERS
-// ════════════════════════════════════════════════════════════════
-
-function getRollType()      { const T=currentMode==='cave'?CAVE:DUNGEON; const r=roll(20); return {r,text:T.type[r],cx:isCrossover(T.type[r])}; }
-function getRollSize()      { const T=currentMode==='cave'?CAVE:DUNGEON; const r=roll(6);  return {r,text:T.size[r]}; }
-function getRollExits()     { const T=currentMode==='cave'?CAVE:DUNGEON; const r=roll(4);  return {r,text:T.exits[r]}; }
-function getRollFeature()   { const T=currentMode==='cave'?CAVE:DUNGEON; const r=roll(12); return {r,text:T.feature[r]}; }
-function getRollAtmo()      { const T=currentMode==='cave'?CAVE:DUNGEON; const r=roll(10); return {r,text:T.atmo[r]}; }
-function getRollEncounter() {
-  const T=currentMode==='cave'?CAVE:DUNGEON; const r=roll(6);
-  if (r===1) { const t=roll(6); return {r,t,text:`Encounter — ${T.encounterType[t]}`,hasEnc:true}; }
-  return {r,text:'No encounter',hasEnc:false};
-}
-function getRollTwist() {
-  const c=roll(6);
-  if (c===6) { const r=roll(12); return {fires:true,c,r,text:TWISTS[r]}; }
-  return {fires:false,c};
-}
-
-
-// ════════════════════════════════════════════════════════════════
-//  INDIVIDUAL TABLE ROLLS
-// ════════════════════════════════════════════════════════════════
-
-function rollSingle(which) {
-  if (which==='type') {
-    const x=getRollType();
-    setRes('res-type', x.cx ? `${rn(x.r)}<span style="color:var(--crossover-color)">${x.text}</span>` : `${rn(x.r)}${x.text}`, true);
-  } else if (which==='size')     { const x=getRollSize();     setRes('res-size',    `${rn(x.r)}${x.text}`,true); }
-  else if (which==='exits')      { const x=getRollExits();    setRes('res-exits',   `${rn(x.r)}${x.text}`,true); }
-  else if (which==='feature')    { const x=getRollFeature();  setRes('res-feature', `${rn(x.r)}${x.text}`,true); }
-  else if (which==='atmo')       { const x=getRollAtmo();     setRes('res-atmo',    `${rn(x.r)}${x.text}`,true); }
-  else if (which==='encounter')  {
-    const x=getRollEncounter();
-    setRes('res-encounter', `${rn(x.hasEnc?`${x.r}→${x.t}`:x.r)}${x.text}`, true);
-  } else if (which==='twist') {
-    const x=getRollTwist();
-    if (x.fires) { setRes('res-twist',`<span class="roll-num">[✦${x.r}]</span>${x.text}`,true); }
-    else         { setRes('res-twist',`${rn(x.c)}No twist`,true); }
-  }
-}
-
-
-// ════════════════════════════════════════════════════════════════
-//  GENERATE FULL ROOM
-// ════════════════════════════════════════════════════════════════
-
-function generateRoom() {
-  const type    = getRollType();
-  const size    = getRollSize();
-  const exits   = getRollExits();
-  const feature = getRollFeature();
-  const atmo    = getRollAtmo();
-  const enc     = getRollEncounter();
-  const twist   = getRollTwist();
-
-  if (currentMode==='dungeon' && scopeMax) {
-    roomCount++;
-    document.getElementById('room-current').textContent = roomCount;
-  }
-
-  const typeHtml = type.cx
-    ? `${rn(type.r)}<span style="color:var(--crossover-color)">${type.text}</span>`
-    : `${rn(type.r)}${type.text}`;
-  const ed = enc.hasEnc ? `${enc.r}→${enc.t}` : `${enc.r}`;
-
-  setRes('res-type',     typeHtml);
-  setRes('res-size',     `${rn(size.r)}${size.text}`);
-  setRes('res-exits',    `${rn(exits.r)}${exits.text}`);
-  setRes('res-feature',  `${rn(feature.r)}${feature.text}`);
-  setRes('res-atmo',     `${rn(atmo.r)}${atmo.text}`);
-  setRes('res-encounter',`${rn(ed)}${enc.text}`);
-  if (twist.fires) { setRes('res-twist',`<span class="roll-num">[✦${twist.r}]</span>${twist.text}`); }
-  else             { setRes('res-twist',`${rn(twist.c)}No twist`); }
-
-  const typeKey  = currentMode==='cave' ? 'Formation' : 'Room Type';
-  const typeClass = type.cx ? 'room-line crossover-line' : 'room-line';
-
-  let scopeLine = '';
-  if (currentMode==='dungeon' && scopeMax) {
-    const pct  = roomCount / scopeMax;
-    const feel = roomCount >= scopeMax  ? ' — you have reached the heart' :
-                 pct >= 0.75            ? ' — the end draws close'        :
-                 pct >= 0.45            ? ' — you are deep within'        : '';
-    scopeLine = `<div class="room-line">
-      <span class="room-key" style="color:var(--gold-dim)">Progress</span>
-      <span class="room-val" style="color:var(--gold-mid);font-style:normal;font-size:0.92rem;">Room ${roomCount} of ~${scopeMax}${feel}</span>
-    </div>`;
-  }
-
-  const twistLine = twist.fires ? `<div class="room-line twist-line">
-    <span class="room-key">✦ Twist</span>
-    <span class="room-val"><span class="roll-num">[${twist.r}]</span>${twist.text}</span>
-  </div>` : '';
-
-  const box = document.getElementById('room-combined');
-  box.className = 'combined-result revealed';
-  box.innerHTML = `
-    ${scopeLine}
-    <div class="${typeClass}">
-      <span class="room-key">${typeKey}</span>
-      <span class="room-val">${typeHtml}</span>
-    </div>
-    <div class="room-line"><span class="room-key">Size</span>      <span class="room-val">${rn(size.r)}${size.text}</span></div>
-    <div class="room-line"><span class="room-key">Exits</span>     <span class="room-val">${rn(exits.r)}${exits.text}</span></div>
-    <div class="room-line"><span class="room-key">Feature</span>   <span class="room-val">${rn(feature.r)}${feature.text}</span></div>
-    <div class="room-line"><span class="room-key">Encounter</span> <span class="room-val">${rn(ed)}${enc.text}</span></div>
-    <div class="room-line"><span class="room-key">Atmosphere</span><span class="room-val">${rn(atmo.r)}${atmo.text}</span></div>
-    ${twistLine}`;
-}
-
-
-// ════════════════════════════════════════════════════════════════
-//
+// ═══════════════════════════════════════════════════════════════════
 //  LOOT TABLE DATA
-//
 //  All items conform to ShadowDark Core Rules.
-//  No invented items, potions, or equipment not in the core book.
+//  No invented items or equipment not in the core book.
 //
-//  Structure: each context has weighted CATEGORIES (common → rare)
-//  and specific item tables per category.
-//
-//  To edit: find the context and category below, change the strings.
-//  To add items: add to the array. Weighting is controlled by
-//  LOOT_WEIGHTS — lower numbers = more common.
-//
-// ════════════════════════════════════════════════════════════════
+//  Structure: weighted categories per context, items per category.
+//  To edit: find the context and change strings in the item arrays.
+//  To add items: add strings to an array — weight stays the same.
+//  To adjust rarity: change the w values in LOOT_WEIGHTS.
+// ═══════════════════════════════════════════════════════════════════
 
-// ── CATEGORY WEIGHTS ─────────────────────────────────────────────
-// Each context defines which categories exist and how likely they are.
-// Weight is relative frequency. E.g. {cat:'coin', w:4} is twice as
-// likely as {cat:'valuable', w:2}.
-const LOOT_WEIGHTS = {
-  pockets: [
-    { cat:'coin',     w:5 },
-    { cat:'gear',     w:4 },
-    { cat:'oddity',   w:1 }
-  ],
-  stash_poor: [
-    { cat:'coin',     w:4 },
-    { cat:'gear',     w:4 },
-    { cat:'document', w:2 }
-  ],
-  stash_rich: [
-    { cat:'coin',     w:3 },
-    { cat:'gear',     w:3 },
-    { cat:'valuable', w:2 },
-    { cat:'document', w:2 }
-  ],
-  cave: [
-    { cat:'gear',     w:4 },
-    { cat:'coin',     w:3 },
-    { cat:'creature', w:2 },
-    { cat:'unusual',  w:1 }
-  ],
-  dungeon: [
-    { cat:'coin',     w:4 },
-    { cat:'valuable', w:3 },
-    { cat:'gear',     w:2 },
-    { cat:'magic',    w:1 }
-  ]
+// Weighted category definitions per context key
+// w = relative weight (higher = more common)
+var LOOT_WEIGHTS = {
+  pockets:    [ {c:"coin",w:5}, {c:"gear",w:4}, {c:"oddity",w:1} ],
+  stash_poor: [ {c:"coin",w:4}, {c:"gear",w:4}, {c:"document",w:2} ],
+  stash_rich: [ {c:"coin",w:3}, {c:"gear",w:3}, {c:"valuable",w:2}, {c:"document",w:2} ],
+  cave:       [ {c:"gear",w:4}, {c:"coin",w:3}, {c:"creature",w:2}, {c:"unusual",w:1} ],
+  dungeon:    [ {c:"coin",w:4}, {c:"valuable",w:3}, {c:"gear",w:2}, {c:"magic",w:1} ]
 };
 
-// ── ITEM TABLES BY CONTEXT AND CATEGORY ──────────────────────────
-// Add or edit entries freely within each array.
-const LOOT_ITEMS = {
+// Item arrays per context and category
+// Edit strings freely. No null padding needed here — these use pick() not roll().
+var LOOT_ITEMS = {
 
-  // ── POCKETS / BODY ──────────────────────────────────────────────
-  // Quick search of a defeated individual.
+  // ── POCKETS / BODY ─────────────────────────────────────────────
   pockets: {
     coin: [
       "A few coppers — 1d6 cp",
@@ -1333,8 +735,7 @@ const LOOT_ITEMS = {
     ]
   },
 
-  // ── STASH / OFFICE — POOR ───────────────────────────────────────
-  // Desperate gang, abandoned hideout, struggling operation.
+  // ── STASH / OFFICE — POOR ──────────────────────────────────────
   stash_poor: {
     coin: [
       "Scattered coppers — 2d6 cp",
@@ -1342,7 +743,7 @@ const LOOT_ITEMS = {
       "Hidden pouch — 2d6 sp",
       "Coin box, nearly empty — 1d4 sp",
       "Nothing — cleaned out",
-      "Trade goods — worth 1d6 sp to the right buyer"
+      "Trade goods worth 1d6 sp to the right buyer"
     ],
     gear: [
       "Rope, 50 ft",
@@ -1352,20 +753,19 @@ const LOOT_ITEMS = {
       "Lantern, no oil",
       "Lockpicks, worn and incomplete",
       "Bedroll",
-      "Hammer and spikes"
+      "Hammer and iron spikes"
     ],
     document: [
       "Wanted poster — possibly relevant",
       "Partial map or rough directions",
       "List of names — debtors or targets",
-      "Note in crude handwriting — cryptic",
-      "Receipt or ledger page",
+      "Note in crude handwriting — cryptic contents",
+      "Receipt or ledger page — partial records",
       "Nothing useful — old scraps"
     ]
   },
 
-  // ── STASH / OFFICE — RICH ───────────────────────────────────────
-  // Successful operation, active leadership, flush with coin.
+  // ── STASH / OFFICE — RICH ──────────────────────────────────────
   stash_rich: {
     coin: [
       "Coin box — 2d6 sp",
@@ -1373,7 +773,7 @@ const LOOT_ITEMS = {
       "Hidden drawer — 2d6 gp",
       "Operational fund pouch — 1d10 gp",
       "Mixed coin cache — 1d4 gp and 1d6 sp",
-      "Trade invoice — redeemable for 1d6 gp at named location"
+      "Trade invoice redeemable for 1d6 gp at a named location"
     ],
     gear: [
       "Quality rope and tools",
@@ -1389,21 +789,20 @@ const LOOT_ITEMS = {
       "Small gemstone — worth 1d6 gp",
       "Silver plate or cup — worth 2d6 sp",
       "Fine weapon from SD weapon list",
-      "Ivory or carved token — worth 1d6 gp",
-      "Quality clothing or cloak — worth 1d6 sp"
+      "Carved ivory token — worth 1d6 gp",
+      "Quality cloak or clothing — worth 1d6 sp"
     ],
     document: [
       "Contracts — names, payments, ongoing operations",
       "Sealed letter addressed to someone important",
-      "Ledger with coded entries — ongoing deals",
+      "Coded ledger — ongoing deals, names disguised",
       "Deed, writ, or official document",
-      "Map with marked locations",
+      "Map with marked locations — some annotated",
       "Written orders — recent, specific, dangerous"
     ]
   },
 
-  // ── CAVE / WILDERNESS ────────────────────────────────────────────
-  // Creature lair, old camp, natural cache, hollow, rock shelf.
+  // ── CAVE / WILDERNESS ──────────────────────────────────────────
   cave: {
     gear: [
       "Rope and pitons — left by a previous explorer",
@@ -1413,11 +812,11 @@ const LOOT_ITEMS = {
       "Bedroll, weathered but usable",
       "Old rations — barely edible, 1d4 days worth",
       "Abandoned pack with mixed contents",
-      "Canteen and fire kit"
+      "Fire kit and canteen"
     ],
     coin: [
       "Scattered coin — 1d6 sp, filthy and old",
-      "Creature-collected shinies — 1d6 sp worth",
+      "Creature-collected shinies — worth 1d6 sp",
       "Buried pouch — 2d6 sp",
       "Previous explorer purse — 1d6 sp and 1d4 gp",
       "Nothing — bare stone",
@@ -1433,18 +832,17 @@ const LOOT_ITEMS = {
     ],
     unusual: [
       "Carved token — someone was here deliberately",
-      "Bones of a previous adventurer with usable gear",
-      "Natural gem or crystal — worth 1d6 gp rough",
+      "Bones of a previous adventurer with usable gear — roll gear",
+      "Natural crystal or mineral — worth 1d6 gp rough",
       "Something that should not be here — too fine, too recent",
       "Old campsite with buried cache underneath",
       "A mark or sign — recognisable to the right person"
     ]
   },
 
-  // ── DUNGEON / CRYPT ──────────────────────────────────────────────
-  // Rooms, sarcophagi, niches, hidden compartments, altars.
+  // ── DUNGEON / CRYPT ────────────────────────────────────────────
   // All items strictly SD Core Rules canon.
-  // Magic is rare and meaningful — weighted accordingly.
+  // Magic is weighted very rare — one chance in ten items on average.
   dungeon: {
     coin: [
       "Old coin — 1d6 sp, tarnished",
@@ -1452,7 +850,7 @@ const LOOT_ITEMS = {
       "Coin cache — 1d6 gp and 1d6 sp",
       "Offering bowl — 2d6 sp in ancient coin",
       "Hidden compartment — 1d4 gp",
-      "Nothing — stripped long ago",
+      "Nothing — stripped clean long ago",
       "Burial coin — single gp, placed deliberately"
     ],
     valuable: [
@@ -1461,8 +859,8 @@ const LOOT_ITEMS = {
       "Uncut gem — worth 1d4 gp",
       "Carved idol — worth 1d6 gp to collector or temple",
       "Silver plate or vessel — worth 2d6 sp",
-      "Engraved weapon (decorative, functional) — SD weapon list",
-      "Small art object — worth 1d6 gp",
+      "Engraved weapon — decorative and functional, SD weapon list",
+      "Small art object — worth 1d6 gp to the right buyer",
       "Ceremonial armor piece — worth 1d6 sp as scrap or 1d6 gp intact"
     ],
     gear: [
@@ -1470,7 +868,7 @@ const LOOT_ITEMS = {
       "Old armor — leather or chain, needs repair",
       "Rope and adventurer supplies",
       "Ritual candles and chalk — worth 1d6 sp",
-      "Quality tool — crowbar, lockpicks, or similar",
+      "Crowbar or quality tool",
       "Empty flask or vial — clean and sealed"
     ],
     magic: [
@@ -1484,168 +882,32 @@ const LOOT_ITEMS = {
   }
 };
 
-// ── ITEM COUNT ROLLS BY CONTEXT ───────────────────────────────────
-// Returns number of items found. Cave and dungeon can return 0.
-function rollItemCount(ctx) {
-  if (ctx === 'pockets')                        return Math.ceil(Math.random() * 3);       // 1d3
-  if (ctx === 'stash_poor')                     return Math.ceil(Math.random() * 4);       // 1d4
-  if (ctx === 'stash_rich')                     return Math.ceil(Math.random() * 6);       // 1d6
-  if (ctx === 'cave' || ctx === 'dungeon')      return Math.max(0, Math.ceil(Math.random() * 4) - 1); // 1d4-1
-  return 1;
-}
-
-// ── WEIGHTED CATEGORY PICKER ──────────────────────────────────────
-function pickCategory(ctx) {
-  const weights = LOOT_WEIGHTS[ctx];
-  const total   = weights.reduce((s, w) => s + w.w, 0);
-  let r = Math.random() * total;
-  for (const w of weights) { r -= w.w; if (r <= 0) return w.cat; }
-  return weights[weights.length - 1].cat;
-}
-
-// ── ROLL ONE ITEM ─────────────────────────────────────────────────
-function rollOneItem(ctx) {
-  const cat   = pickCategory(ctx);
-  const table = LOOT_ITEMS[ctx][cat];
-  if (!table || table.length === 0) return { cat: 'coin', text: 'Nothing of note' };
-  const text  = table[Math.floor(Math.random() * table.length)];
-  return { cat, text };
-}
-
-// ── REROLL ONE LINE ───────────────────────────────────────────────
-function rerollLootLine(idx, ctx) {
-  const item = rollOneItem(ctx);
-  const row  = document.getElementById('loot-line-' + idx);
-  if (!row) return;
-  row.querySelector('.loot-line-text').textContent = item.text;
-  row.querySelector('.loot-line-cat').textContent  = item.cat;
-}
-
-// ── MAIN SEARCH FUNCTION ──────────────────────────────────────────
-function searchLoot() {
-  const ctx    = lootCtx === 'stash' ? ('stash_' + lootWealth) : lootCtx;
-  const count  = rollItemCount(ctx);
-  const box    = document.getElementById('loot-result');
-
-  const ctxLabel = {
-    pockets:    'Pockets / Body',
-    stash_poor: 'Stash — Poor',
-    stash_rich: 'Stash — Successful',
-    cave:       'Cave / Wilderness',
-    dungeon:    'Dungeon / Crypt'
-  }[ctx] || ctx;
-
-  if (count === 0) {
-    box.className = 'combined-result revealed';
-    box.innerHTML = `<div style="text-align:center;padding:1rem 0;color:var(--ink-faint);font-style:italic;">
-      <span style="font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase;">${ctxLabel}</span><br><br>
-      Nothing here. The search turns up empty.
-    </div>`;
-    return;
-  }
-
-  const items = [];
-  for (let i = 0; i < count; i++) { items.push(rollOneItem(ctx)); }
-
-  const rows = items.map((item, i) => `
-    <div class="room-line" id="loot-line-${i}">
-      <span class="room-key loot-line-cat">${item.cat}</span>
-      <span class="room-val loot-line-text" style="flex:1;">${item.text}</span>
-      <button class="btn-roll" style="margin-left:0.5rem;flex-shrink:0;" onclick="rerollLootLine(${i},'${ctx}')">↺</button>
-    </div>`).join('');
-
-  box.className = 'combined-result revealed';
-  box.innerHTML = `
-    <div class="room-line" style="margin-bottom:0.2rem;">
-      <span class="room-key" style="color:var(--gold-dim);">Context</span>
-      <span class="room-val" style="color:var(--gold-mid);font-style:normal;font-size:0.92rem;">${ctxLabel} — ${count} item${count > 1 ? 's' : ''} found</span>
-    </div>
-    ${rows}`;
-}
-
-// ── LOOT STATE ────────────────────────────────────────────────────
-let lootCtx    = 'pockets';
-let lootWealth = 'poor';
-
-const LOOT_INFO = {
-  pockets: 'Quick search of a defeated individual. Always finds something. (1d3 items)',
-  stash:   'Searching a hideout, desk, cache, or known stash. Toggle wealth tier above.',
-  cave:    'Natural setting — creature lair, old camp, rock cache. May be empty. (1d4-1)',
-  dungeon: 'Constructed space — room, sarcophagus, niche, compartment. May be empty. (1d4-1)'
-};
-
-function setLootCtx(ctx, el) {
-  lootCtx = ctx;
-  document.querySelectorAll('.loot-ctx-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('wealth-row').classList.toggle('visible', ctx === 'stash');
-  document.getElementById('loot-info-box').textContent = LOOT_INFO[ctx];
-  // Reset result box
-  const box = document.getElementById('loot-result');
-  box.className = 'combined-result empty';
-  box.textContent = 'Choose a context and search…';
-}
-
-function setWealth(w, el) {
-  lootWealth = w;
-  document.querySelectorAll('.wealth-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function initLoot() {
-  document.getElementById('loot-info-box').textContent = LOOT_INFO['pockets'];
-}
-
-// ════════════════════════════════════════════════════════════════
-//
+// ═══════════════════════════════════════════════════════════════════
 //  NPC TABLE DATA
-//
-//  All tables drawn from or consistent with ShadowDark Core Rules.
-//  Ancestry, occupation, and attitude match SD's setting conventions.
-//  Reaction and loyalty use SD's social interaction framework.
-//
-// ════════════════════════════════════════════════════════════════
+//  All consistent with ShadowDark Core Rules.
+//  Ancestry list matches SD Core ancestries only.
+//  Names drawn from and expanded beyond SD Core p.38.
+// ═══════════════════════════════════════════════════════════════════
 
-const NPC_TABLES = {
-
-  // d10 — Ancestry (SD Core ancestries only)
+var NPC = {
+  // d10 — weighted toward human as SD implies
   ancestry: [
     null,
-    "Human", "Human", "Human", "Human",
-    "Elf",
-    "Dwarf",
-    "Halfling",
-    "Half-orc",
-    "Goblin",
-    "Human" // weighted toward human, as SD implies
+    "Human","Human","Human","Human","Elf",
+    "Dwarf","Halfling","Half-orc","Goblin","Human"
   ],
-
-  // d20 — Occupation / role in the world
+  // d20
   occupation: [
     null,
-    "Laborer or dockworker",
-    "Farmer or herder",
-    "Merchant or trader",
-    "Innkeeper or tavern keeper",
-    "Guard or watchman",
-    "Soldier or mercenary",
-    "Thief or cutpurse",
-    "Fence or black market dealer",
-    "Priest or acolyte",
-    "Healer or herbalist",
-    "Blacksmith or weaponsmith",
-    "Carpenter or mason",
-    "Hunter or trapper",
-    "Sailor or river boatman",
-    "Scribe or clerk",
-    "Criminal enforcer",
-    "Beggar or vagrant",
-    "Spy or informant",
-    "Minor noble or official",
-    "Scholar or sage"
+    "Laborer or dockworker","Farmer or herder","Merchant or trader",
+    "Innkeeper or tavern keeper","Guard or watchman","Soldier or mercenary",
+    "Thief or cutpurse","Fence or black market dealer","Priest or acolyte",
+    "Healer or herbalist","Blacksmith or weaponsmith","Carpenter or mason",
+    "Hunter or trapper","Sailor or river boatman","Scribe or clerk",
+    "Criminal enforcer","Beggar or vagrant","Spy or informant",
+    "Minor noble or official","Scholar or sage"
   ],
-
-  // d8 — Disposition toward the party on first meeting
+  // d8
   disposition: [
     null,
     "Hostile — openly unfriendly, looking for an excuse",
@@ -1657,8 +919,7 @@ const NPC_TABLES = {
     "Helpful — actively wants to assist",
     "Desperate — needs something badly, will cooperate to get it"
   ],
-
-  // d6 — Reaction in an encounter or confrontation
+  // d6
   reaction: [
     null,
     "Attacks or escalates immediately",
@@ -1668,19 +929,17 @@ const NPC_TABLES = {
     "Cooperative — willing to negotiate",
     "Deferential — compliant, wants no trouble"
   ],
-
-  // d6 — Cooperation under pressure (interrogation, persuasion, threat)
+  // d6
   coop: [
     null,
     "Refuses entirely — will not speak",
     "Deflects — partial truths, no real information",
     "Reluctant — shares something small if pressed",
     "Cooperative — tells what they know if given reason",
-    "Eager — wants to be helpful, possibly too helpful",
+    "Eager — wants to be helpful, possibly too much so",
     "Breaks quickly — gives everything without much pressure"
   ],
-
-  // d6 — Loyalty check for allies and hirelings
+  // d6
   loyalty: [
     null,
     "Flees or betrays at first sign of serious danger",
@@ -1690,8 +949,7 @@ const NPC_TABLES = {
     "Loyal — requires significant cause to break",
     "Steadfast — will not abandon under any foreseeable circumstance"
   ],
-
-  // d8 — What motivates this NPC (recruitment context)
+  // d8
   motivation: [
     null,
     "Coin — purely mercenary, no deeper interest",
@@ -1703,8 +961,7 @@ const NPC_TABLES = {
     "Belief — shares a cause or conviction with you",
     "Desperation — out of options, you are the least bad one"
   ],
-
-  // d8 — What they want in exchange (recruitment ask)
+  // d8
   ask: [
     null,
     "Coin — a fair daily rate, paid in advance",
@@ -1716,8 +973,7 @@ const NPC_TABLES = {
     "Passage — get them somewhere safe after this is done",
     "Nothing yet — but they will collect eventually"
   ],
-
-  // d6 — What they can actually do (capability)
+  // d6
   capability: [
     null,
     "Unskilled — can carry, watch, or distract; little else",
@@ -1726,145 +982,419 @@ const NPC_TABLES = {
     "Experienced — has done this kind of thing before",
     "Skilled — genuinely good, worth having",
     "Exceptional — rare find; has abilities you currently lack"
-  ],
-
-};
-
-// ── NPC NAMES BY ANCESTRY ─────────────────────────────────────────
-// Drawn from and expanded from SD Core Rules p.38 conventions.
-// The quick generator picks from the list matching the rolled ancestry.
-// Add names freely — longer lists reduce duplicate draws.
-const NPC_NAMES = {
-  Human: [
-    "Aldric","Bram","Cass","Davan","Edric","Fenn","Garet","Holt",
-    "Idris","Joran","Kael","Lorn","Maren","Nessa","Orin","Petra",
-    "Quinn","Rook","Sable","Tarn","Ursa","Vance","Wren","Xan",
-    "Yael","Zora","Beric","Calla","Dace","Elda","Finn","Gale",
-    "Hara","Isen","Joss","Kira","Leif","Mora","Niles","Odra"
-  ],
-  Elf: [
-    "Aelindra","Caladwen","Elowyn","Faelin","Galadris","Ithiel",
-    "Laeriel","Mireille","Naevys","Olindra","Quilara","Raevin",
-    "Sylindra","Thalion","Uriviel","Valanthe","Wynleth","Xilvar",
-    "Yravel","Zylphia","Aeren","Beriel","Corin","Daeris","Eravel",
-    "Faeron","Gaeriel","Haelis","Inavel","Jaeren"
-  ],
-  Dwarf: [
-    "Aldun","Bofra","Dolgrin","Eberk","Fargrim","Gardain","Harbek",
-    "Ildrak","Jodok","Kildrak","Lorm","Mordak","Nura","Orsik",
-    "Poldak","Rurik","Sholdrak","Tordak","Ulfgar","Vondal","Wulfric",
-    "Belra","Dagna","Eldra","Hilda","Ingra","Marta","Sigra","Tordis"
-  ],
-  Halfling: [
-    "Andry","Bree","Cade","Dorro","Elias","Fenwick","Garret","Hob",
-    "Ilsa","Jasper","Kes","Lilo","Merric","Nessa","Oswin","Pip",
-    "Quin","Roswyn","Sadie","Tobias","Una","Vilo","Willa","Xim",
-    "Yanna","Zeb","Bingo","Corwin","Delwyn","Emry"
-  ],
-  "Half-orc": [
-    "Argath","Brugha","Crusk","Drolg","Ekrag","Ferga","Grond","Hurga",
-    "Ikrath","Jorga","Krag","Lurga","Morda","Narsk","Olgra","Prusk",
-    "Rorgha","Skrag","Thorda","Urgha","Vrak","Wrusk","Yorgha","Zarka",
-    "Barka","Droga","Golga","Holga","Irga","Jorka"
-  ],
-  Goblin: [
-    "Bex","Drix","Flix","Grub","Hix","Jick","Krix","Lox","Mib",
-    "Nix","Pex","Quib","Rax","Snik","Tix","Ubb","Vrix","Wix",
-    "Xib","Yax","Zex","Brik","Dob","Frix","Gib","Hob","Jax","Kib","Lrix"
   ]
 };
 
+// NPC name lists by ancestry — expanded from SD Core p.38
+// Add names freely to any list to reduce duplicate draws.
+var NPC_NAMES = {
+  "Human": [
+    "Aldric","Bram","Cass","Davan","Edric","Fenn","Garet","Holt","Idris","Joran",
+    "Kael","Lorn","Maren","Nessa","Orin","Petra","Quinn","Rook","Sable","Tarn",
+    "Ursa","Vance","Wren","Yael","Zora","Beric","Calla","Dace","Elda","Finn",
+    "Gale","Hara","Isen","Joss","Kira","Leif","Mora","Niles","Odra","Pell"
+  ],
+  "Elf": [
+    "Aelindra","Caladwen","Elowyn","Faelin","Galadris","Ithiel","Laeriel","Mireille",
+    "Naevys","Olindra","Quilara","Raevin","Sylindra","Thalion","Uriviel","Valanthe",
+    "Wynleth","Xilvar","Yravel","Zylphia","Aeren","Beriel","Corin","Daeris","Eravel",
+    "Faeron","Gaeriel","Haelis","Inavel","Jaeren","Kaelis","Liravel","Mirael"
+  ],
+  "Dwarf": [
+    "Aldun","Bofra","Dolgrin","Eberk","Fargrim","Gardain","Harbek","Ildrak","Jodok",
+    "Kildrak","Lorm","Mordak","Nura","Orsik","Poldak","Rurik","Sholdrak","Tordak",
+    "Ulfgar","Vondal","Wulfric","Belra","Dagna","Eldra","Hilda","Ingra","Marta",
+    "Sigra","Tordis","Urdra","Valdra"
+  ],
+  "Halfling": [
+    "Andry","Bree","Cade","Dorro","Elias","Fenwick","Garret","Hob","Ilsa","Jasper",
+    "Kes","Lilo","Merric","Nessa","Oswin","Pip","Quin","Roswyn","Sadie","Tobias",
+    "Una","Vilo","Willa","Yanna","Zeb","Bingo","Corwin","Delwyn","Emry","Ferris"
+  ],
+  "Half-orc": [
+    "Argath","Brugha","Crusk","Drolg","Ekrag","Ferga","Grond","Hurga","Ikrath","Jorga",
+    "Krag","Lurga","Morda","Narsk","Olgra","Prusk","Rorgha","Skrag","Thorda","Urgha",
+    "Vrak","Wrusk","Yorgha","Zarka","Barka","Droga","Golga","Holga","Irga","Jorka"
+  ],
+  "Goblin": [
+    "Bex","Drix","Flix","Grub","Hix","Jick","Krix","Lox","Mib","Nix",
+    "Pex","Quib","Rax","Snik","Tix","Ubb","Vrix","Wix","Xib","Yax",
+    "Zex","Brik","Dob","Frix","Gib","Hob","Jax","Kib","Lrix","Mox"
+  ]
+};
 
-// ════════════════════════════════════════════════════════════════
-//  LOOT STATE & LOGIC
-// ════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════════
 
-let lootCtx    = 'pockets';
-let lootWealth = 'poor';
+var dungeonMode = 'cave';
+var scopeMax    = null;
+var roomCount   = 0;
+var lootCtx     = 'pockets';
+var lootWealth  = 'poor';
 
-const LOOT_INFO = {
-  pockets: "Quick search of a defeated individual — coin, carried gear, personal items.",
-  stash:   "Searching a hideout, desk, office, or known cache. Toggle wealth tier above.",
-  cave:    "Natural setting search — creature lair, old camp, hidden hollow, rock cache.",
-  dungeon: "Architectural search — room, sarcophagus, niche, hidden compartment, altar."
+// ═══════════════════════════════════════════════════════════════════
+//  ORACLE
+// ═══════════════════════════════════════════════════════════════════
+
+function rollOracle() {
+  var r   = roll(20);
+  var box = document.getElementById('oracle-result-box');
+  box.style.display = 'block';
+  document.getElementById('oracle-roll-display').textContent = 'Roll: ' + r;
+  document.getElementById('oracle-prompt-area').innerHTML = '';
+
+  if (r === 10) {
+    document.getElementById('oracle-answer').textContent  = 'TWIST';
+    document.getElementById('oracle-answer').className   = 'oracle-answer twist';
+    document.getElementById('oracle-modifier').textContent = 'Roll a Prompt.';
+    document.getElementById('oracle-prompt-area').innerHTML =
+      '<button class="btn-prompt-inline" onclick="rollInlinePrompt()">⚄ Roll Prompt</button>';
+  } else if (r <= 9) {
+    document.getElementById('oracle-answer').textContent  = 'NO';
+    document.getElementById('oracle-answer').className   = 'oracle-answer no';
+    document.getElementById('oracle-modifier').textContent = (r % 2 !== 0) ? 'But\u2026 (add a complication)' : '';
+  } else {
+    document.getElementById('oracle-answer').textContent  = 'YES';
+    document.getElementById('oracle-answer').className   = 'oracle-answer yes';
+    document.getElementById('oracle-modifier').textContent = (r % 2 !== 0) ? 'But\u2026 (add a complication)' : '';
+  }
+  box.classList.remove('revealed'); void box.offsetWidth; box.classList.add('revealed');
+}
+
+function rollInlinePrompt() {
+  var vr = roll(100), nr = roll(100);
+  document.getElementById('oracle-prompt-area').innerHTML =
+    '<button class="btn-prompt-inline" onclick="rollInlinePrompt()">⚄ Roll Prompt</button>' +
+    '<div class="inline-prompt-result revealed">' +
+      '<div class="inline-prompt-label">Prompt</div>' +
+      '<div class="inline-prompt-text">' + VERBS[vr] + ' \u00b7 ' + NOUNS[nr] + '</div>' +
+      '<div class="inline-prompt-rolls">Verb [' + vr + '] \u00b7 Noun [' + nr + ']</div>' +
+    '</div>';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  PROMPTS
+// ═══════════════════════════════════════════════════════════════════
+
+function rollPrompt() {
+  var vr = roll(100), nr = roll(100);
+  var big = document.getElementById('prompt-result-big');
+  big.style.display = 'block';
+  big.classList.remove('revealed'); void big.offsetWidth; big.classList.add('revealed');
+  document.getElementById('prompt-verb').textContent  = VERBS[vr];
+  document.getElementById('prompt-noun').textContent  = ' ' + NOUNS[nr];
+  document.getElementById('prompt-rolls').textContent = 'Verb [' + vr + '] \u00b7 Noun [' + nr + ']';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DUNGEON — MODE & SCOPE
+// ═══════════════════════════════════════════════════════════════════
+
+function setMode(mode) {
+  dungeonMode = mode;
+  document.getElementById('btn-cave').classList.toggle('active', mode === 'cave');
+  document.getElementById('btn-dungeon').classList.toggle('active', mode === 'dungeon');
+  document.getElementById('info-cave').style.display    = mode === 'cave'    ? '' : 'none';
+  document.getElementById('info-dungeon').style.display = mode === 'dungeon' ? '' : 'none';
+  document.getElementById('label-type').textContent = mode === 'cave' ? 'Formation / Tunnel' : 'Room / Corridor';
+  ['res-type','res-size','res-exits','res-feature','res-encounter','res-atmo','res-twist'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) { el.innerHTML = '—'; el.classList.add('empty'); }
+  });
+  var box = document.getElementById('room-combined');
+  box.className = 'combined-result empty';
+  box.textContent = 'Choose a mode and roll to generate your first area\u2026';
+}
+
+function updateScope() {
+  var sel = document.getElementById('scope-select').value;
+  var info = document.getElementById('scope-info');
+  var counter = document.getElementById('room-counter');
+  var resetBtn = document.getElementById('btn-reset');
+  if (!sel) { scopeMax = null; roomCount = 0; info.textContent = ''; counter.style.display = 'none'; resetBtn.style.display = 'none'; return; }
+  var d = SCOPE_DATA[sel];
+  scopeMax  = d.min + Math.floor(Math.random() * (d.max - d.min + 1));
+  roomCount = 0;
+  info.textContent = d.desc + ' Target: ~' + scopeMax + ' rooms.';
+  counter.style.display  = '';
+  resetBtn.style.display = '';
+  document.getElementById('room-current').textContent = roomCount;
+  document.getElementById('room-max').textContent     = scopeMax;
+}
+
+function resetScope() {
+  document.getElementById('scope-select').value = '';
+  scopeMax = null; roomCount = 0;
+  document.getElementById('scope-info').textContent      = '';
+  document.getElementById('room-counter').style.display  = 'none';
+  document.getElementById('btn-reset').style.display     = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DUNGEON — ROLL HELPERS
+// ═══════════════════════════════════════════════════════════════════
+
+function getDungeonTables() { return dungeonMode === 'cave' ? CAVE : DUNGEON; }
+
+function rollType() {
+  var T = getDungeonTables(), r = roll(20);
+  return { r:r, text:T.type[r], cx:isCrossover(T.type[r]) };
+}
+function rollSize()     { var T=getDungeonTables(), r=roll(6);  return {r:r, text:T.size[r]}; }
+function rollExits()    { var T=getDungeonTables(), r=roll(4);  return {r:r, text:T.exits[r]}; }
+function rollFeature()  { var T=getDungeonTables(), r=roll(12); return {r:r, text:T.feature[r]}; }
+function rollAtmo()     { var T=getDungeonTables(), r=roll(10); return {r:r, text:T.atmo[r]}; }
+function rollEnc() {
+  var T=getDungeonTables(), r=roll(6);
+  if (r===1) { var t=roll(6); return {r:r, t:t, text:'Encounter — '+T.encType[t], hasEnc:true}; }
+  return {r:r, text:'No encounter', hasEnc:false};
+}
+function rollTwist() {
+  var c=roll(6);
+  if (c===6) { var r=roll(12); return {fires:true, c:c, r:r, text:TWISTS[r]}; }
+  return {fires:false, c:c};
+}
+
+function typeHtml(t) {
+  if (t.cx) return rn(t.r) + '<span style="color:var(--crossover)">' + t.text + '</span>';
+  return rn(t.r) + t.text;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DUNGEON — INDIVIDUAL ROLLS
+// ═══════════════════════════════════════════════════════════════════
+
+function rollSingle(which) {
+  if (which === 'type') {
+    var t = rollType(); setRes('res-type', typeHtml(t), true);
+  } else if (which === 'size') {
+    var x = rollSize(); setRes('res-size', rn(x.r)+x.text, true);
+  } else if (which === 'exits') {
+    var x = rollExits(); setRes('res-exits', rn(x.r)+x.text, true);
+  } else if (which === 'feature') {
+    var x = rollFeature(); setRes('res-feature', rn(x.r)+x.text, true);
+  } else if (which === 'atmo') {
+    var x = rollAtmo(); setRes('res-atmo', rn(x.r)+x.text, true);
+  } else if (which === 'encounter') {
+    var e = rollEnc();
+    var d = e.hasEnc ? e.r+'→'+e.t : e.r;
+    setRes('res-encounter', rn(d)+e.text, true);
+  } else if (which === 'twist') {
+    var tw = rollTwist();
+    if (tw.fires) setRes('res-twist', '<span class="roll-num">[✦'+tw.r+']</span>'+tw.text, true);
+    else          setRes('res-twist', rn(tw.c)+'No twist', true);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DUNGEON — GENERATE ROOM
+// ═══════════════════════════════════════════════════════════════════
+
+function generateRoom() {
+  var ty = rollType(), sz = rollSize(), ex = rollExits();
+  var fe = rollFeature(), at = rollAtmo(), en = rollEnc(), tw = rollTwist();
+
+  if (dungeonMode === 'dungeon' && scopeMax) {
+    roomCount++;
+    document.getElementById('room-current').textContent = roomCount;
+  }
+
+  var ed = en.hasEnc ? en.r+'→'+en.t : en.r;
+  setRes('res-type',     typeHtml(ty));
+  setRes('res-size',     rn(sz.r)+sz.text);
+  setRes('res-exits',    rn(ex.r)+ex.text);
+  setRes('res-feature',  rn(fe.r)+fe.text);
+  setRes('res-atmo',     rn(at.r)+at.text);
+  setRes('res-encounter',rn(ed)+en.text);
+  if (tw.fires) setRes('res-twist','<span class="roll-num">[✦'+tw.r+']</span>'+tw.text);
+  else          setRes('res-twist',rn(tw.c)+'No twist');
+
+  var typeKey = dungeonMode === 'cave' ? 'Formation' : 'Room Type';
+  var typeClass = ty.cx ? 'room-line crossover-line' : 'room-line';
+
+  var scopeLine = '';
+  if (dungeonMode === 'dungeon' && scopeMax) {
+    var pct = roomCount / scopeMax;
+    var feel = roomCount >= scopeMax ? ' \u2014 you have reached the heart'
+             : pct >= 0.75           ? ' \u2014 the end draws close'
+             : pct >= 0.45           ? ' \u2014 you are deep within' : '';
+    scopeLine = '<div class="room-line"><span class="room-key" style="color:var(--gold-dim)">Progress</span>' +
+      '<span class="room-val" style="color:var(--gold-mid);font-style:normal;font-size:0.92rem;">Room ' +
+      roomCount + ' of ~' + scopeMax + feel + '</span></div>';
+  }
+
+  var twistLine = tw.fires
+    ? '<div class="room-line twist-line"><span class="room-key">&#10022; Twist</span>' +
+      '<span class="room-val"><span class="roll-num">[' + tw.r + ']</span>' + tw.text + '</span></div>'
+    : '';
+
+  var box = document.getElementById('room-combined');
+  box.className = 'combined-result revealed';
+  box.innerHTML = scopeLine +
+    '<div class="' + typeClass + '"><span class="room-key">' + typeKey + '</span><span class="room-val">' + typeHtml(ty) + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Size</span><span class="room-val">'      + rn(sz.r)+sz.text + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Exits</span><span class="room-val">'     + rn(ex.r)+ex.text + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Feature</span><span class="room-val">'   + rn(fe.r)+fe.text + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Encounter</span><span class="room-val">' + rn(ed)+en.text   + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Atmosphere</span><span class="room-val">'+ rn(at.r)+at.text + '</span></div>' +
+    twistLine;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  LOOT
+// ═══════════════════════════════════════════════════════════════════
+
+var LOOT_INFO_TEXT = {
+  pockets: 'Quick search of a defeated individual. Always finds something. (1d3 items)',
+  stash:   'Searching a hideout, desk, cache, or office. Toggle wealth tier above.',
+  cave:    'Natural setting — creature lair, old camp, rock cache. May be empty. (1d4\u22121)',
+  dungeon: 'Constructed space — room, sarcophagus, niche, compartment. May be empty. (1d4\u22121)'
 };
 
 function setLootCtx(ctx, el) {
   lootCtx = ctx;
-  document.querySelectorAll('.loot-ctx-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.loot-ctx-btn').forEach(function(b) { b.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('wealth-row').classList.toggle('visible', ctx === 'stash');
-  document.getElementById('loot-info-box').textContent = LOOT_INFO[ctx];
-  const box = document.getElementById('loot-result');
+  document.getElementById('loot-info').textContent = LOOT_INFO_TEXT[ctx];
+  var box = document.getElementById('loot-result');
   box.className = 'combined-result empty';
-  box.textContent = 'Choose a context and search…';
+  box.textContent = 'Choose a context and tap Search\u2026';
 }
 
 function setWealth(w, el) {
   lootWealth = w;
-  document.querySelectorAll('.wealth-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.wealth-btn').forEach(function(b) { b.classList.remove('active'); });
   el.classList.add('active');
 }
 
-function initLoot() {
-  document.getElementById('loot-info-box').textContent = LOOT_INFO['pockets'];
+function rollItemCount(ctx) {
+  if (ctx === 'pockets')    return Math.ceil(Math.random() * 3);
+  if (ctx === 'stash_poor') return Math.ceil(Math.random() * 4);
+  if (ctx === 'stash_rich') return Math.ceil(Math.random() * 6);
+  return Math.max(0, Math.ceil(Math.random() * 4) - 1); // cave / dungeon: 1d4-1
 }
 
+function pickWeightedCat(ctx) {
+  var weights = LOOT_WEIGHTS[ctx];
+  var total = 0;
+  for (var i = 0; i < weights.length; i++) total += weights[i].w;
+  var r = Math.random() * total;
+  for (var i = 0; i < weights.length; i++) { r -= weights[i].w; if (r <= 0) return weights[i].c; }
+  return weights[weights.length - 1].c;
+}
 
-// ════════════════════════════════════════════════════════════════
-//  NPC LOGIC
-// ════════════════════════════════════════════════════════════════
+function rollOneItem(ctx) {
+  var cat   = pickWeightedCat(ctx);
+  var table = LOOT_ITEMS[ctx][cat];
+  if (!table || table.length === 0) return { cat: 'coin', text: 'Nothing of note' };
+  return { cat: cat, text: pick(table) };
+}
 
-function rollNPCSingle(which) {
-  const map = {
-    reaction:    { id: 'res-npc-reaction',    data: NPC_TABLES.reaction },
-    coop:        { id: 'res-npc-coop',        data: NPC_TABLES.coop },
-    loyalty:     { id: 'res-npc-loyalty',     data: NPC_TABLES.loyalty },
-    disposition: { id: 'res-npc-disposition', data: NPC_TABLES.disposition },
-    motivation:  { id: 'res-npc-motivation',  data: NPC_TABLES.motivation },
-    ask:         { id: 'res-npc-ask',         data: NPC_TABLES.ask },
-    capability:  { id: 'res-npc-capability',  data: NPC_TABLES.capability }
+function rerollLootLine(idx, ctx) {
+  var item = rollOneItem(ctx);
+  var catEl  = document.getElementById('lcat-' + idx);
+  var textEl = document.getElementById('ltext-' + idx);
+  if (catEl)  catEl.textContent  = item.cat;
+  if (textEl) textEl.textContent = item.text;
+}
+
+function searchLoot() {
+  var ctx = lootCtx === 'stash' ? ('stash_' + lootWealth) : lootCtx;
+  var count = rollItemCount(ctx);
+  var box = document.getElementById('loot-result');
+
+  var labels = {
+    pockets:'Pockets / Body', stash_poor:'Stash \u2014 Poor', stash_rich:'Stash \u2014 Successful',
+    cave:'Cave / Wilderness', dungeon:'Dungeon / Crypt'
   };
-  const entry = map[which];
-  if (!entry) return;
-  const n = entry.data.length - 1;
-  const r = roll(n);
-  setRes(entry.id, `${rn(r)}${entry.data[r]}`, true);
+  var label = labels[ctx] || ctx;
+
+  if (count === 0) {
+    box.className = 'combined-result revealed';
+    box.innerHTML = '<div style="text-align:center;padding:1.5rem 0;color:var(--ink-faint);font-style:italic;">' +
+      '<span style="font-family:Cinzel,serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);">' + label + '</span><br><br>' +
+      'Nothing here. The search turns up empty.</div>';
+    return;
+  }
+
+  var items = [];
+  for (var i = 0; i < count; i++) items.push(rollOneItem(ctx));
+
+  var header = '<div class="room-line"><span class="room-key" style="color:var(--gold-dim)">Context</span>' +
+    '<span class="room-val" style="color:var(--gold-mid);font-style:normal;font-size:0.92rem;">' +
+    label + ' \u2014 ' + count + ' item' + (count > 1 ? 's' : '') + ' found</span></div>';
+
+  var rows = '';
+  for (var i = 0; i < items.length; i++) {
+    rows += '<div class="loot-item-row">' +
+      '<span class="loot-cat" id="lcat-' + i + '">' + items[i].cat + '</span>' +
+      '<span class="loot-text" id="ltext-' + i + '">' + items[i].text + '</span>' +
+      '<button class="btn-roll" style="flex-shrink:0;margin-left:0.5rem;" onclick="rerollLootLine(' + i + ',\'' + ctx + '\')">&#8634;</button>' +
+      '</div>';
+  }
+
+  box.className = 'combined-result revealed';
+  box.innerHTML = header + rows;
 }
+
+// ═══════════════════════════════════════════════════════════════════
+//  NPC
+// ═══════════════════════════════════════════════════════════════════
 
 function generateNPC() {
-  const ancestry = NPC_TABLES.ancestry[roll(10)];
-  const occ      = NPC_TABLES.occupation[roll(20)];
-  const disp     = NPC_TABLES.disposition[roll(8)];
+  var ancestry = NPC.ancestry[roll(10)];
+  var occ      = NPC.occupation[roll(20)];
+  var disp     = NPC.disposition[roll(8)];
+  var names    = NPC_NAMES[ancestry] || NPC_NAMES['Human'];
+  var name     = names[Math.floor(Math.random() * names.length)];
 
-  // Pick a name from the ancestry-specific list
-  const nameList = NPC_NAMES[ancestry] || NPC_NAMES['Human'];
-  const name     = nameList[Math.floor(Math.random() * nameList.length)];
-
-  const box = document.getElementById('npc-quick-result');
+  var box = document.getElementById('npc-quick-result');
   box.style.display = 'block';
-  box.className = 'npc-generate-result revealed';
-  box.innerHTML = `
-    <div class="room-line"><span class="room-key">Name</span>       <span class="room-val" style="font-family:'Cinzel',serif;font-size:1.1rem;font-style:normal;color:var(--parchment-warm);">${name}</span></div>
-    <div class="room-line"><span class="room-key">Ancestry</span>   <span class="room-val">${ancestry}</span></div>
-    <div class="room-line"><span class="room-key">Occupation</span> <span class="room-val">${occ}</span></div>
-    <div class="room-line"><span class="room-key">Disposition</span><span class="room-val">${disp}</span></div>`;
+  box.className = 'npc-quick-result revealed';
+  box.innerHTML =
+    '<div class="room-line"><span class="room-key">Name</span>' +
+      '<span class="room-val" style="font-family:Cinzel,serif;font-size:1.1rem;font-style:normal;color:var(--parchment-warm);">' + name + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Ancestry</span><span class="room-val">' + ancestry + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Occupation</span><span class="room-val">' + occ + '</span></div>' +
+    '<div class="room-line"><span class="room-key">Disposition</span><span class="room-val">' + disp + '</span></div>';
 }
 
-// ════════════════════════════════════════════════════════════════
+function rollNPC(which) {
+  var map = {
+    reaction:    { id:'res-reaction',    table:NPC.reaction,    n:6 },
+    coop:        { id:'res-coop',        table:NPC.coop,        n:6 },
+    loyalty:     { id:'res-loyalty',     table:NPC.loyalty,     n:6 },
+    disposition: { id:'res-disposition', table:NPC.disposition, n:8 },
+    motivation:  { id:'res-motivation',  table:NPC.motivation,  n:8 },
+    ask:         { id:'res-ask',         table:NPC.ask,         n:8 },
+    capability:  { id:'res-capability',  table:NPC.capability,  n:6 }
+  };
+  var entry = map[which];
+  if (!entry) return;
+  var r = roll(entry.n);
+  setRes(entry.id, rn(r) + entry.table[r], true);
+}
+
+// ═══════════════════════════════════════════════════════════════════
 //  NAV
-// ════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 
 function showPanel(name, el) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  const p = document.getElementById('panel-' + name);
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t)   { t.classList.remove('active'); });
+  var p = document.getElementById('panel-' + name);
   if (p)  p.classList.add('active');
   if (el) el.classList.add('active');
 }
 
-// Initialise panels that need setup on page load
-window.addEventListener('DOMContentLoaded', () => { initLoot(); });
+// ═══════════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('loot-info').textContent = LOOT_INFO_TEXT['pockets'];
+});
 </script>
 </body>
 </html>
